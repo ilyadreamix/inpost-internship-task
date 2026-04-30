@@ -1,4 +1,5 @@
 package io.github.ilyadreamix.inpostinternshiptask
 
-class InPostInternshipTaskActivity {
-}
+import android.app.Activity
+
+internal class InPostInternshipTaskActivity : Activity()

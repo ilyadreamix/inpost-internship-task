@@ -1,0 +1,10 @@
+[versions]
+android = "9.2.0"
+kotlin = "2.2.10"
+
+[libraries]
+
+[bundles]
+
+[plugins]
+android-app = { id = "com.android.application", version.ref = "android" }

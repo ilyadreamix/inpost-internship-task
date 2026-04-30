@@ -1,0 +1,2 @@
+-keep class kotlin.Metadata { *; }
+-keepattributes *Annotation*, Signature, InnerClasses
