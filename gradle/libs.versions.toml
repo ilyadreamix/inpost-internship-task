@@ -8,9 +8,12 @@ androidx-core = "1.18.0"
 androidx-appCompat = "1.7.1"
 compose = "1.11.0"
 compose-material3 = "1.4.0"
+compose-activity = "1.13.0"
 ktor = "3.4.3"
 koin = "4.2.1"
 coil = "3.4.0"
+google-maps = "20.0.0"
+google-maps-compose = "6.12.0"
 app-android-sdk-compile = "37"
 app-android-sdk-min = "28"
 app-android-sdk-target = "37"
@@ -22,6 +25,7 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appCompat" }
+compose-activity = { module = "androidx.activity:activity-compose", version.ref = "compose-activity" }
 compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
 compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose" }
@@ -34,14 +38,17 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+google-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "google-maps" }
+google-maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "google-maps-compose" }
 
 [bundles]
 kotlin = ["kotlinx-datetime", "kotlinx-serialization-json"]
 androidx = ["androidx-core", "androidx-appCompat"]
-compose = ["compose-ui", "compose-foundation", "compose-runtime", "compose-material3", "compose-ui-tooling-preview"]
+compose = ["compose-activity", "compose-ui", "compose-foundation", "compose-runtime", "compose-material3", "compose-ui-tooling-preview"]
 koin = ["koin-core", "koin-android"]
 ktor = ["ktor-core", "ktor-engine-okhttp"]
 coil = ["coil-compose", "coil-network-okhttp"]
+google-maps = ["google-maps", "google-maps-compose"]
 
 [plugins]
 android-app = { id = "com.android.application", version.ref = "android-gradle" }

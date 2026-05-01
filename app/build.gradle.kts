@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
   alias(libs.plugins.android.app)
@@ -6,12 +6,28 @@ plugins {
   alias(libs.plugins.kotlin.compose)
 }
 
+dependencies {
+  implementation(libs.bundles.kotlin)
+  implementation(libs.bundles.androidx)
+  implementation(libs.bundles.compose)
+  implementation(libs.bundles.koin)
+  implementation(libs.bundles.ktor)
+  implementation(libs.bundles.coil)
+  implementation(libs.bundles.google.maps)
+
+  debugImplementation(libs.compose.ui.tooling)
+}
+
+val localPropertiesFile = rootProject.file("local.properties")
+if (!localPropertiesFile.exists()) {
+  throw IllegalStateException("File \"local.properties\" was not found")
+}
+
+val localProperties = Properties()
+localPropertiesFile.inputStream().use { localProperties.load(it) }
+
 kotlin {
   jvmToolchain(17)
-
-  compilerOptions {
-    jvmTarget = JvmTarget.JVM_17
-  }
 }
 
 android {
@@ -31,43 +47,61 @@ android {
 
     versionName = libs.versions.app.version.name.get()
     versionCode = libs.versions.app.version.code.get().toInt()
+
+    manifestPlaceholders += "appGoogleMapsSdkKey" to localProperties.getProperty("app.google.maps.key")
+  }
+
+  signingConfigs {
+    create("development") {
+      storeFile = file(localProperties.getProperty("app.signing.development.store.file"))
+      storePassword = localProperties.getProperty("app.signing.development.store.password")
+      keyAlias = localProperties.getProperty("app.signing.development.key.alias")
+      keyPassword = localProperties.getProperty("app.signing.development.key.password")
+    }
+
+    create("production") {
+      storeFile = file(localProperties.getProperty("app.signing.production.store.file"))
+      storePassword = localProperties.getProperty("app.signing.production.store.password")
+      keyAlias = localProperties.getProperty("app.signing.production.key.alias")
+      keyPassword = localProperties.getProperty("app.signing.production.key.password")
+    }
+  }
+
+  flavorDimensions += "environment"
+  productFlavors {
+    create("development") {
+      dimension = "environment"
+      signingConfig = signingConfigs.getByName("development")
+      applicationIdSuffix = ".development"
+    }
+
+    create("production") {
+      dimension = "environment"
+      signingConfig = signingConfigs.getByName("production")
+    }
   }
 
   buildTypes {
     debug {
       applicationIdSuffix = ".debug"
-      signingConfig = signingConfigs.getByName("debug")
+      signingConfig = null
     }
 
     release {
       isMinifyEnabled = true
       isShrinkResources = true
-      signingConfig = signingConfigs.getByName("debug")
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
     }
+  }
 
-    buildFeatures {
-      buildConfig = true
-      resValues = true
-      compose = true
-    }
+  buildFeatures {
+    compose = true
+  }
 
-    packaging {
-      resources {
-        excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        excludes += "/META-INF/DEPENDENCIES"
-      }
+  packaging {
+    resources {
+      excludes += "/META-INF/{AL2.0,LGPL2.1}"
+      excludes += "/META-INF/DEPENDENCIES"
     }
   }
-}
-
-dependencies {
-  implementation(libs.bundles.kotlin)
-  implementation(libs.bundles.androidx)
-  implementation(libs.bundles.compose)
-  implementation(libs.bundles.koin)
-  implementation(libs.bundles.ktor)
-  implementation(libs.bundles.coil)
-
-  debugImplementation(libs.compose.ui.tooling.preview)
 }
