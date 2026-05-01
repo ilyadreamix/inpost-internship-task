@@ -1,10 +1,49 @@
 [versions]
-android = "9.2.0"
+# noinspection NewerVersionAvailable
 kotlin = "2.2.10"
+kotlinx-datetime = "0.7.1"
+kotlinx-serialization-json = "1.11.0"
+android-gradle = "9.2.0"
+androidx-core = "1.18.0"
+androidx-appCompat = "1.7.1"
+compose = "1.11.0"
+compose-material3 = "1.4.0"
+ktor = "3.4.3"
+koin = "4.2.1"
+coil = "3.4.0"
+app-android-sdk-compile = "37"
+app-android-sdk-min = "28"
+app-android-sdk-target = "37"
+app-version-code = "1"
+app-version-name = "0.0.1"
 
 [libraries]
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
+androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appCompat" }
+compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
+compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "compose" }
+compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose" }
+compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "compose-material3" }
+compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose" }
+compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "compose" }
+ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-engine-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 
 [bundles]
+kotlin = ["kotlinx-datetime", "kotlinx-serialization-json"]
+androidx = ["androidx-core", "androidx-appCompat"]
+compose = ["compose-ui", "compose-foundation", "compose-runtime", "compose-material3", "compose-ui-tooling-preview"]
+koin = ["koin-core", "koin-android"]
+ktor = ["ktor-core", "ktor-engine-okhttp"]
+coil = ["coil-compose", "coil-network-okhttp"]
 
 [plugins]
-android-app = { id = "com.android.application", version.ref = "android" }
+android-app = { id = "com.android.application", version.ref = "android-gradle" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
