@@ -1,12 +1,9 @@
 package io.github.ilyadreamix.inpostinternshiptask.presentation.shared.shapes
 
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 
 @Suppress("FunctionName")
 internal fun RoundedRhombusPath(radius: Dp, density: Density, size: Size) = Path().apply {
@@ -28,12 +25,4 @@ internal fun RoundedRhombusPath(radius: Dp, density: Density, size: Size) = Path
   quadraticTo(size.width / 2, 0f, size.width / 2 + radiusPx, radiusPx)
 
   close()
-}
-
-internal data class RoundedRhombusShape(private val radius: Dp) : Shape {
-
-  override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density) =
-    Outline.Generic(path = createPath(size, density))
-
-  private fun createPath(size: Size, density: Density) = RoundedRhombusPath(radius, density, size)
 }

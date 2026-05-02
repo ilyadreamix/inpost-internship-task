@@ -4,10 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
 import io.github.ilyadreamix.inpostinternshiptask.domain.points.models.PickupPointModel
 import io.github.ilyadreamix.inpostinternshiptask.domain.points.options.ListPickupPointsOption
 import io.github.ilyadreamix.inpostinternshiptask.domain.points.usecases.ListPickupPointsUseCase
+import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.composables.PointsMapMarkerData
 import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.data.PointsMapState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -22,7 +22,7 @@ internal class PointsMapViewModel(private val listPointsUC: ListPickupPointsUseC
   private val _state = MutableStateFlow(PointsMapState())
   val state = _state.asStateFlow()
 
-  private val cache = LinkedHashMap<String, PointsMapState.Point>(100, 0.7f)
+  private val cache = mutableMapOf<String, PointsMapMarkerData>()
   private var cameraJob: Job? = null
 
   fun onCameraIdle(centerUpdate: LatLng, zoom: Float) {
@@ -44,11 +44,8 @@ internal class PointsMapViewModel(private val listPointsUC: ListPickupPointsUseC
       val relativePoint = PickupPointModel.Location(center.latitude, center.longitude)
       val points = listPointsUC(ListPickupPointsOption(relativePoint = relativePoint)).items
 
-      points.forEach { point ->
-        cache[point.name] = PointsMapState.Point(point)
-      }
-
-      _state.update { it.copy(isZoomWarningVisible = false, points = cache.values.toList()) }
+      points.forEach { point -> cache[point.name] = PointsMapMarkerData(point) }
+      _state.update { it.copy(isZoomWarningVisible = false, markers = cache.values.toList()) }
     } catch (error: Throwable) {
       Log.e(Tag, "fetchPoints: Unexpected error\n${error.message}")
     }
