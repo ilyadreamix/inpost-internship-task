@@ -4,7 +4,7 @@ import io.github.ilyadreamix.inpostinternshiptask.data.points.sources.api.dtos.L
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.http.parameters
+import io.ktor.client.request.parameter
 
 internal class RealPickupPointsApi(private val httpClient: HttpClient) : PickupPointsApi {
   override suspend fun listPickupPoints(
@@ -14,12 +14,10 @@ internal class RealPickupPointsApi(private val httpClient: HttpClient) : PickupP
     relativePoint: String?
   ): ListPickupPointsResponseApiDto {
     val response = httpClient.get("points") {
-      parameters {
-        if (perPage != null) { append("per_page", perPage.toString()) }
-        if (status != null) { append("status", status) }
-        if (country != null) { append("country", country) }
-        if (relativePoint != null) { append("relative_point", relativePoint) }
-      }
+      if (perPage != null) { parameter("per_page", perPage) }
+      if (status != null) { parameter("status", status) }
+      if (country != null) { parameter("country", country) }
+      if (relativePoint != null) { parameter("relative_point", relativePoint) }
     }
     return response.body()
   }
