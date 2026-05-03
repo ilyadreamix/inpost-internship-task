@@ -51,23 +51,12 @@ internal fun PointsMap(
       items = state.markers,
       clusterContent = { cluster -> PointsMapCluster(data = cluster) },
       clusterItemContent = { marker ->
-        val visible = remember(state.focusedMarker) {
-          derivedStateOf {
-            val focusedMarker = state.focusedMarker?.point
-            if (focusedMarker == null || focusedMarker.name == marker.point.name) {
-              return@derivedStateOf true
-            }
 
-            val bounds = cameraPositionState.projection?.visibleRegion?.latLngBounds ?: return@derivedStateOf true
-            val isNearFocusedMarker = bounds.contains(marker.position)
-
-            return@derivedStateOf !isNearFocusedMarker
-          }
-        }
+        val markerVisible = cameraPositionState.calculateMapMarkerVisible(marker, focusedMarker = state.focusedMarker)
 
         PointsMapMarker(
           data = marker,
-          hidden = !visible.value,
+          hidden = !markerVisible.value,
           focused = marker.point.name == state.focusedMarker?.point?.name
         )
       },
@@ -96,6 +85,24 @@ internal fun PointsMap(
         return@Clustering true
       }
     )
+  }
+}
+
+@Composable
+private fun CameraPositionState.calculateMapMarkerVisible(
+  marker: PointsMapMarkerData,
+  focusedMarker: PointsMapMarkerData?
+) = remember(focusedMarker) {
+  derivedStateOf {
+    val focusedMarker = focusedMarker?.point
+    if (focusedMarker == null || focusedMarker.name == marker.point.name) {
+      return@derivedStateOf true
+    }
+
+    val bounds = this.projection?.visibleRegion?.latLngBounds ?: return@derivedStateOf true
+    val isNearFocusedMarker = bounds.contains(marker.position)
+
+    return@derivedStateOf !isNearFocusedMarker
   }
 }
 
