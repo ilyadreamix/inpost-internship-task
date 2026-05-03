@@ -4,13 +4,10 @@ import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.composables.PointsMapScreen
+import io.github.ilyadreamix.inpostinternshiptask.shared.theme.AppTheme
 
 internal class InPostInternshipTaskActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,7 +23,7 @@ internal class InPostInternshipTaskActivity : AppCompatActivity() {
     }
 
     setContent {
-      MaterialTheme(colorScheme = if (isSystemInDarkTheme()) darkColorScheme() else lightColorScheme()) {
+      AppTheme {
         PointsMapScreen()
       }
     }

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -17,6 +16,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.rememberCameraPositionState
 import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.PointsMapViewModel
 import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.data.PointsMapState
+import io.github.ilyadreamix.inpostinternshiptask.shared.theme.AppTheme
 import io.github.ilyadreamix.inpostinternshiptask.shared.theme.AppTokens
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -82,7 +82,7 @@ private val ScreenMapPolandCenter = CameraPosition.fromLatLngZoom(LatLng(52.0, 1
 @Preview
 @Composable
 private fun ScreenPreview() {
-  MaterialTheme {
+  AppTheme {
     PointsMapScreen(
       state = PointsMapState(),
       onCameraIdle = { /* ... */ },

@@ -26,12 +26,13 @@ internal fun PointsMapCluster(data: Cluster<PointsMapMarkerData>, modifier: Modi
 
   val textMeasurer = rememberTextMeasurer()
 
-  val colorPrimary = MaterialTheme.colorScheme.primary
-  val colorOnPrimary = MaterialTheme.colorScheme.onPrimary
+  val colorSecondary = MaterialTheme.colorScheme.secondary
+  val colorOnSecondary = MaterialTheme.colorScheme.onSecondary
+  val colorOutline = MaterialTheme.colorScheme.outline
 
   Canvas(modifier = modifier.clusterSize(data.size)) {
-    drawClusterBackground(borderColor = colorOnPrimary, color = colorPrimary)
-    drawClusterText(textMeasurer, markersCount = data.size, color = colorOnPrimary)
+    drawClusterBackground(borderColor = colorOutline, color = colorSecondary)
+    drawClusterText(textMeasurer, markersCount = data.size, color = colorOnSecondary)
   }
 }
 

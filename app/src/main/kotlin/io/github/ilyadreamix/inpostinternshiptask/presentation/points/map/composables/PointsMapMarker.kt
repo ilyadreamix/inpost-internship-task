@@ -30,12 +30,13 @@ internal fun PointsMapMarker(data: PointsMapMarkerData, modifier: Modifier = Mod
 
   val iconPainter = painterResource(R.drawable.mic_shelves)
 
-  val colorSecondary = MaterialTheme.colorScheme.secondary
-  val colorOnSecondary = MaterialTheme.colorScheme.onSecondary
+  val colorPrimary = MaterialTheme.colorScheme.primary
+  val colorOnPrimary = MaterialTheme.colorScheme.onPrimary
+  val colorOutline = MaterialTheme.colorScheme.outline
 
   Canvas(modifier = modifier.size(MarkerSize)) {
-    drawMarkerBackground(color = colorSecondary, borderColor = colorOnSecondary)
-    drawMarkerIcon(iconPainter, color = colorOnSecondary)
+    drawMarkerBackground(color = colorPrimary, borderColor = colorOutline)
+    drawMarkerIcon(iconPainter, color = colorOnPrimary)
   }
 }
 

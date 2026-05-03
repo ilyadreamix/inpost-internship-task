@@ -104,14 +104,17 @@ private fun SnackBar(
     modifier = modifier
       .fillMaxWidth()
       .padding(horizontal = AppTokens.Paddings.SizeScreen)
-      .background(color = Color.White, shape = AppTokens.RoundedCornerShapes.MS)
+      .background(color = SnackBarColor, shape = AppTokens.RoundedCornerShapes.MS)
       .padding(all = AppTokens.Spacings.MS),
     horizontalArrangement = Arrangement.spacedBy(AppTokens.Spacings.MS),
     verticalAlignment = Alignment.CenterVertically
   ) {
-    CompositionLocalProvider(LocalContentColor provides Color.Black) {
+    CompositionLocalProvider(LocalContentColor provides SnackBarContentColor) {
       icon()
       text()
     }
   }
 }
+
+private val SnackBarColor = Color.White
+private val SnackBarContentColor = Color.Black
