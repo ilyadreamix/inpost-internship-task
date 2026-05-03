@@ -23,7 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import io.github.ilyadreamix.inpostinternshiptask.R
-import io.github.ilyadreamix.inpostinternshiptask.shared.theme.AppTokens
+import io.github.ilyadreamix.inpostinternshiptask.presentation.shared.theme.AppTokens
 
 @Composable
 internal fun PointsMapScreenSnackBar(content: PointsMapScreenSnackBarContent?, modifier: Modifier = Modifier) {

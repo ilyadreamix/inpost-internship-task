@@ -1,4 +1,4 @@
-package io.github.ilyadreamix.inpostinternshiptask.shared.theme
+package io.github.ilyadreamix.inpostinternshiptask.presentation.shared.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.unit.dp

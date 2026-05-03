@@ -1,4 +1,4 @@
-package io.github.ilyadreamix.inpostinternshiptask.shared.theme
+package io.github.ilyadreamix.inpostinternshiptask.presentation.shared.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

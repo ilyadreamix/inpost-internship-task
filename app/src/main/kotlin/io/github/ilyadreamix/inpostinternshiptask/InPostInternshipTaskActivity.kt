@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.composables.PointsMapScreen
-import io.github.ilyadreamix.inpostinternshiptask.shared.theme.AppTheme
+import io.github.ilyadreamix.inpostinternshiptask.presentation.shared.theme.AppTheme
 
 internal class InPostInternshipTaskActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {

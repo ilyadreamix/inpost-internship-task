@@ -1,9 +1,7 @@
 package io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.composables
 
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
@@ -28,7 +26,8 @@ import kotlinx.coroutines.launch
 internal fun PointsMap(
   state: PointsMapState,
   cameraPositionState: CameraPositionState,
-  onMarkerFocused: (marker: PointsMapMarkerData) -> Unit
+  onMarkerFocused: (marker: PointsMapMarkerData) -> Unit,
+  contentPadding: PaddingValues
 ) {
 
   val coroutineScope = rememberCoroutineScope()
@@ -42,7 +41,7 @@ internal fun PointsMap(
       myLocationButtonEnabled = false,
       zoomControlsEnabled = false
     ),
-    contentPadding = WindowInsets.systemBars.asPaddingValues(),
+    contentPadding = contentPadding,
     mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
     properties = MapProperties(latLngBoundsForCameraTarget = MapPolandBoundaries, minZoomPreference = MapMinZoom),
     cameraPositionState = cameraPositionState

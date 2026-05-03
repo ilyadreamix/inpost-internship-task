@@ -15,6 +15,8 @@ dependencies {
   implementation(libs.bundles.coil)
   implementation(libs.bundles.google.maps)
 
+  implementation(libs.swissKnife)
+
   debugImplementation(libs.compose.ui.tooling)
 }
 
