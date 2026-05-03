@@ -49,7 +49,7 @@ internal fun PointsMap(state: PointsMapState, cameraPositionState: CameraPositio
       onClusterClick = { cluster ->
         coroutineScope.launch {
           val newCameraLatLng = cluster.position
-          val newCameraZoom = cameraPositionState.position.zoom + 2f
+          val newCameraZoom = cameraPositionState.position.zoom + MapClusterClickZoomStep
           val newCamera = CameraUpdateFactory.newLatLngZoom(newCameraLatLng, newCameraZoom)
           cameraPositionState.animate(newCamera)
         }
@@ -62,3 +62,4 @@ internal fun PointsMap(state: PointsMapState, cameraPositionState: CameraPositio
 private const val MapMinClusterSize = 4
 private const val MapMinZoom = 5.5f
 private val MapPolandBoundaries = LatLngBounds(LatLng(48.5, 14.3), LatLng(54.6, 24.6))
+private const val MapClusterClickZoomStep = 2f
