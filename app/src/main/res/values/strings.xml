@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name">Mapa InPost</string>
+  <string name="app_points_map_distance_warning">Zbyt daleko. Przybliż mapę!</string>
+  <string name="app_points_map_update_error">Ojej! Nie udało się zaktualizować karty. Spróbuj ponownie.</string>
 </resources>

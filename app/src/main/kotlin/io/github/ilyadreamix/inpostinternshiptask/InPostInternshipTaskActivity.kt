@@ -4,9 +4,10 @@ import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.MaterialTheme
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.composables.PointsMap
+import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.composables.PointsMapScreen
 
 internal class InPostInternshipTaskActivity : AppCompatActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +23,9 @@ internal class InPostInternshipTaskActivity : AppCompatActivity() {
     }
 
     setContent {
-      PointsMap()
+      MaterialTheme {
+        PointsMapScreen()
+      }
     }
   }
 }

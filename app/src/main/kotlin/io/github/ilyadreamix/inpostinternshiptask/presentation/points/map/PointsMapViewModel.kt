@@ -9,6 +9,7 @@ import io.github.ilyadreamix.inpostinternshiptask.domain.points.options.ListPick
 import io.github.ilyadreamix.inpostinternshiptask.domain.points.usecases.ListPickupPointsUseCase
 import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.composables.PointsMapMarkerData
 import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.data.PointsMapState
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,20 +23,15 @@ internal class PointsMapViewModel(private val listPointsUC: ListPickupPointsUseC
   private val _state = MutableStateFlow(PointsMapState())
   val state = _state.asStateFlow()
 
-  private val cache = mutableMapOf<String, PointsMapMarkerData>()
+  private val cache = LinkedHashMap<String, PointsMapMarkerData>() // No mutex: previous job is canceled before new one
+                                                                   // starts, so cache writes never overlap
   private var cameraJob: Job? = null
 
-  fun onCameraIdle(centerUpdate: LatLng, zoom: Float) {
-    val zoomTooSmall = zoom < ZoomThreshold
-    _state.update { it.copy(isZoomWarningVisible = zoomTooSmall) }
-    if (zoomTooSmall) {
-      return
-    }
-
+  fun onCameraIdle(center: LatLng) {
     cameraJob?.cancel()
     cameraJob = viewModelScope.launch {
       delay(CameraJobDebounce)
-      fetchPoints(centerUpdate)
+      fetchPoints(center)
     }
   }
 
@@ -45,15 +41,24 @@ internal class PointsMapViewModel(private val listPointsUC: ListPickupPointsUseC
       val points = listPointsUC(ListPickupPointsOption(relativePoint = relativePoint)).items
 
       points.forEach { point -> cache[point.name] = PointsMapMarkerData(point) }
-      _state.update { it.copy(isZoomWarningVisible = false, markers = cache.values.toList()) }
+      _state.update { it.copy(markers = cache.values.toList(), hasError = false) }
     } catch (error: Throwable) {
+      if (error is CancellationException) {
+        return
+      }
+
       Log.e(Tag, "fetchPoints: Unexpected error\n${error.message}")
+      _state.update { it.copy(hasError = true) }
     }
+  }
+
+  fun onCameraStartedMoving() {
+    cameraJob?.cancel()
+    cameraJob = null
   }
 
   companion object {
     private const val Tag = "PointsMapViewModel"
     private val CameraJobDebounce = 500.milliseconds
-    private const val ZoomThreshold = 9f
   }
 }

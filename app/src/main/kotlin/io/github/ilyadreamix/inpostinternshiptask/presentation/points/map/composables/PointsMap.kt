@@ -5,12 +5,9 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
@@ -21,32 +18,8 @@ import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.clustering.Clustering
-import com.google.maps.android.compose.rememberCameraPositionState
-import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.PointsMapViewModel
 import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.data.PointsMapState
 import kotlinx.coroutines.launch
-import org.koin.compose.viewmodel.koinViewModel
-
-@Composable
-internal fun PointsMap(viewModel: PointsMapViewModel = koinViewModel()) {
-
-  val cameraPositionState = rememberCameraPositionState { position = MapPolandCenter }
-  val state = viewModel.state.collectAsStateWithLifecycle()
-
-  PointsMap(
-    state = state.value,
-    cameraPositionState = cameraPositionState
-  )
-
-  LaunchedEffect(cameraPositionState.isMoving) {
-    if (!cameraPositionState.isMoving) {
-      val centerUpdate = cameraPositionState.position.target
-      val zoom = cameraPositionState.position.zoom
-
-      viewModel.onCameraIdle(centerUpdate, zoom)
-    }
-  }
-}
 
 @OptIn(MapsComposeExperimentalApi::class)
 @Composable
@@ -72,7 +45,7 @@ internal fun PointsMap(state: PointsMapState, cameraPositionState: CameraPositio
       items = state.markers,
       clusterContent = { cluster -> PointsMapCluster(data = cluster) },
       clusterItemContent = { marker -> PointsMapMarker(data = marker) },
-      onClusterManager = { (it.renderer as? DefaultClusterRenderer<*>)?.minClusterSize = 3 },
+      onClusterManager = { (it.renderer as? DefaultClusterRenderer<*>)?.minClusterSize = MapMinClusterSize },
       onClusterClick = { cluster ->
         coroutineScope.launch {
           val newCameraLatLng = cluster.position
@@ -86,6 +59,6 @@ internal fun PointsMap(state: PointsMapState, cameraPositionState: CameraPositio
   }
 }
 
+private const val MapMinClusterSize = 4
 private const val MapMinZoom = 5.5f
 private val MapPolandBoundaries = LatLngBounds(LatLng(48.5, 14.3), LatLng(54.6, 24.6))
-private val MapPolandCenter = CameraPosition.fromLatLngZoom(LatLng(52.0, 19.0), 5.5f)
