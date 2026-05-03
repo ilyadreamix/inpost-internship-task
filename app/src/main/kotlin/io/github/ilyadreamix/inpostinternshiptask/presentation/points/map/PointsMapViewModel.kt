@@ -55,6 +55,11 @@ internal class PointsMapViewModel(private val listPointsUC: ListPickupPointsUseC
   fun onCameraStartedMoving() {
     cameraJob?.cancel()
     cameraJob = null
+    updateFocusedMarker(null)
+  }
+
+  fun updateFocusedMarker(marker: PointsMapMarkerData?) {
+    _state.update { it.copy(focusedMarker = marker) }
   }
 
   companion object {

@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.rememberCameraPositionState
 import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.PointsMapViewModel
 import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.data.PointsMapState
@@ -28,7 +29,8 @@ internal fun PointsMapScreen(viewModel: PointsMapViewModel = koinViewModel()) {
   PointsMapScreen(
     state = state.value,
     onCameraIdle = viewModel::onCameraIdle,
-    onCameraStartedMoving = viewModel::onCameraStartedMoving
+    onCameraStartedMoving = viewModel::onCameraStartedMoving,
+    onMarkerFocused = viewModel::updateFocusedMarker
   )
 }
 
@@ -37,6 +39,7 @@ internal fun PointsMapScreen(
   state: PointsMapState,
   onCameraIdle: (center: LatLng) -> Unit,
   onCameraStartedMoving: () -> Unit,
+  onMarkerFocused: (marker: PointsMapMarkerData) -> Unit,
   modifier: Modifier = Modifier
 ) {
 
@@ -45,7 +48,8 @@ internal fun PointsMapScreen(
   Box(modifier = modifier.fillMaxSize()) {
     PointsMap(
       state = state,
-      cameraPositionState = cameraPositionState
+      cameraPositionState = cameraPositionState,
+      onMarkerFocused = onMarkerFocused
     )
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -65,7 +69,7 @@ internal fun PointsMapScreen(
   LaunchedEffect(cameraPositionState.isMoving) {
     if (cameraPositionState.isMoving) {
       onCameraStartedMoving()
-    } else {
+    } else if (cameraPositionState.cameraMoveStartedReason == CameraMoveStartedReason.GESTURE) {
       val centerUpdate = cameraPositionState.position.target
       val zoom = cameraPositionState.position.zoom
 
@@ -86,7 +90,8 @@ private fun ScreenPreview() {
     PointsMapScreen(
       state = PointsMapState(),
       onCameraIdle = { /* ... */ },
-      onCameraStartedMoving = { /* ... */ }
+      onCameraStartedMoving = { /* ... */ },
+      onMarkerFocused = { /* ... */ }
     )
   }
 }
