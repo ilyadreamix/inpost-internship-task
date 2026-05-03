@@ -2,9 +2,11 @@ package io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.compo
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
@@ -36,8 +38,10 @@ internal fun PointsMapMarker(
   hidden: Boolean,
   modifier: Modifier = Modifier
 ) {
+  // At first, it was supposed to be passed to drawMarker* functions' sizeFraction parameter,
+  // but I've decided to pass it to Canvas graphicsLayer instead because of the lags.
+  // It looks worse, but does not make the map too chunky
   val sizeFraction = animateFloatAsState(if (focused) MarkerFocusedSizeFraction else 1f)
-  val alphaAnimated = animateFloatAsState(if (hidden) 0f else 1f)
 
   val iconPainter = painterResource(R.drawable.mic_location_on)
   val easyAccessIconPainter = painterResource(R.drawable.mic_accessible)
@@ -46,22 +50,42 @@ internal fun PointsMapMarker(
   val colorOnPrimary = MaterialTheme.colorScheme.onPrimary
   val colorOutline = MaterialTheme.colorScheme.outline
 
-  Canvas(
+  Box(
     modifier = modifier
-      .size(MarkerSize * sizeFraction.value)
-      .graphicsLayer { alpha = alphaAnimated.value }
+      .size(MarkerSize * MarkerFocusedSizeFraction)
+      .graphicsLayer { alpha = if (hidden) 0f else 1f }, // There also could be animation, but it makes map even more laggy
+    contentAlignment = Alignment.Center
   ) {
+    Canvas(
+      modifier = Modifier
+        .size(MarkerSize)
+        .graphicsLayer { scaleX = sizeFraction.value; scaleY = sizeFraction.value }
+    ) {
 
-    val markerInsetPx = MarkerInset.toPx() * sizeFraction.value
+      val markerInsetPx = MarkerInset.toPx() // * sizeFraction.value
 
-    inset(horizontal = markerInsetPx, vertical = markerInsetPx) {
-      drawMarkerBackground(color = colorPrimary, borderColor = colorOutline, sizeFraction.value)
-      drawMarkerIcon(iconPainter, color = colorOnPrimary, sizeFraction.value)
-    }
+      inset(horizontal = markerInsetPx, vertical = markerInsetPx) {
+        drawMarkerBackground(
+          color = colorPrimary,
+          borderColor = colorOutline,
+          /* sizeFraction = sizeFraction.value */
+        )
 
-    if (data.point.easyAccess) {
-      inset(left = size.minDimension / 1.5f, top = size.minDimension / 1.5f, right = 0f, bottom = 0f) {
-        drawMarkerEasyAccessIcon(painter = easyAccessIconPainter, borderColor = colorOutline, sizeFraction.value)
+        drawMarkerIcon(
+          painter = iconPainter,
+          color = colorOnPrimary,
+          /* sizeFraction = sizeFraction.value */
+        )
+      }
+
+      if (data.point.easyAccess) {
+        inset(left = size.minDimension / 1.5f, top = size.minDimension / 1.5f, right = 0f, bottom = 0f) {
+          drawMarkerEasyAccessIcon(
+            painter = easyAccessIconPainter,
+            borderColor = colorOutline,
+            /* sizeFraction = sizeFraction.value */
+          )
+        }
       }
     }
   }
@@ -71,14 +95,14 @@ private val MarkerSize = 48.dp
 private val MarkerInset = 6.dp
 private const val MarkerFocusedSizeFraction = 1.5f
 
-private fun DrawScope.drawMarkerBackground(color: Color, borderColor: Color, sizeFraction: Float) {
+private fun DrawScope.drawMarkerBackground(color: Color, borderColor: Color, sizeFraction: Float = 1f) {
   drawCircle(color = borderColor, radius = size.minDimension / 2)
   drawCircle(color = color, radius = (size.minDimension / 2) - (MarkerBackgroundBorderThickness.toPx() * sizeFraction))
 }
 
 private val MarkerBackgroundBorderThickness = 1.dp
 
-private fun DrawScope.drawMarkerIcon(painter: Painter, color: Color, sizeFraction: Float) {
+private fun DrawScope.drawMarkerIcon(painter: Painter, color: Color, sizeFraction: Float = 1f) {
 
   val iconSizePx = MarkerIconSize.toPx() * sizeFraction
 
@@ -94,7 +118,7 @@ private fun DrawScope.drawMarkerIcon(painter: Painter, color: Color, sizeFractio
 
 private val MarkerIconSize = 20.dp
 
-private fun DrawScope.drawMarkerEasyAccessIcon(painter: Painter, borderColor: Color, sizeFraction: Float) {
+private fun DrawScope.drawMarkerEasyAccessIcon(painter: Painter, borderColor: Color, sizeFraction: Float = 1f) {
   val borderThicknessPx = MarkerBackgroundBorderThickness.toPx() * sizeFraction
   val borderCornerRadiusPx = MarkerEasyAccessBorderCornerRadius.toPx() * sizeFraction
   val cornerRadiusPx = MarkerEasyAccessCornerRadius.toPx() * sizeFraction

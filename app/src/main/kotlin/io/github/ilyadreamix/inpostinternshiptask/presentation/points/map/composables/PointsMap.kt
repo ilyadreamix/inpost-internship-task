@@ -91,7 +91,7 @@ internal fun PointsMap(
 private fun CameraPositionState.calculateMapMarkerVisible(
   marker: PointsMapMarkerData,
   focusedMarker: PointsMapMarkerData?
-) = remember(focusedMarker) {
+) = remember(marker.point.name, focusedMarker?.point?.name) {
   derivedStateOf {
     val focusedMarker = focusedMarker?.point
     if (focusedMarker == null || focusedMarker.name == marker.point.name) {
