@@ -55,8 +55,11 @@ internal fun PointsMap(
 
         PointsMapMarker(
           data = marker,
-          hidden = !markerVisible.value,
-          focused = marker.point.name == state.focusedMarker?.point?.name
+          state = when {
+            marker.point.name == state.focusedMarker?.point?.name -> PointsMapMarkerState.Focused
+            !markerVisible.value -> PointsMapMarkerState.Hidden
+            else -> PointsMapMarkerState.Visible
+          }
         )
       },
       onClusterManager = { (it.renderer as? DefaultClusterRenderer<*>)?.minClusterSize = MapMinClusterSize },

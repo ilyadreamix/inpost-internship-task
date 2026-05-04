@@ -14,7 +14,7 @@ internal class RealPickupPointsApi(private val httpClient: HttpClient) : PickupP
     relativePoint: String?
   ): ListPickupPointsResponseApiDto {
     val response = httpClient.get("points") {
-      if (perPage != null) { parameter("per_page", perPage) }
+      if (perPage != null && relativePoint == null) { parameter("per_page", perPage) }
       if (status != null) { parameter("status", status) }
       if (country != null) { parameter("country", country) }
       if (relativePoint != null) { parameter("relative_point", relativePoint) }

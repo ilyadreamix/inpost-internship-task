@@ -31,17 +31,19 @@ internal data class PointsMapMarkerData(val point: PickupPointModel) : ClusterIt
   override fun getZIndex() = null
 }
 
+enum class PointsMapMarkerState(val scale: Float) { Focused(1.5f), Hidden(0f), Visible(1f); }
+
 @Composable
 internal fun PointsMapMarker(
   data: PointsMapMarkerData,
-  focused: Boolean,
-  hidden: Boolean,
+  state: PointsMapMarkerState,
   modifier: Modifier = Modifier
 ) {
   // At first, it was supposed to be passed to drawMarker* functions' sizeFraction parameter,
   // but I've decided to pass it to Canvas graphicsLayer instead because of the lags.
   // It looks worse, but does not make the map too chunky
-  val sizeFraction = animateFloatAsState(if (focused) MarkerFocusedSizeFraction else 1f)
+  val scaleAnimation = animateFloatAsState(state.scale)
+  val alphaAnimation = animateFloatAsState(if (state == PointsMapMarkerState.Hidden) 0f else 1f)
 
   val iconPainter = painterResource(R.drawable.mic_location_on)
   val easyAccessIconPainter = painterResource(R.drawable.mic_accessible)
@@ -51,15 +53,17 @@ internal fun PointsMapMarker(
   val colorOutline = MaterialTheme.colorScheme.outline
 
   Box(
-    modifier = modifier
-      .size(MarkerSize * MarkerFocusedSizeFraction)
-      .graphicsLayer { alpha = if (hidden) 0f else 1f }, // There also could be animation, but it makes map even more laggy
+    modifier = modifier.size(MarkerSize * PointsMapMarkerState.Focused.scale),
     contentAlignment = Alignment.Center
   ) {
     Canvas(
       modifier = Modifier
         .size(MarkerSize)
-        .graphicsLayer { scaleX = sizeFraction.value; scaleY = sizeFraction.value }
+        .graphicsLayer {
+          alpha = alphaAnimation.value
+          scaleX = scaleAnimation.value
+          scaleY = scaleAnimation.value
+        }
     ) {
 
       val markerInsetPx = MarkerInset.toPx() // * sizeFraction.value
@@ -93,7 +97,6 @@ internal fun PointsMapMarker(
 
 private val MarkerSize = 48.dp
 private val MarkerInset = 6.dp
-private const val MarkerFocusedSizeFraction = 1.5f
 
 private fun DrawScope.drawMarkerBackground(color: Color, borderColor: Color, sizeFraction: Float = 1f) {
   drawCircle(color = borderColor, radius = size.minDimension / 2)

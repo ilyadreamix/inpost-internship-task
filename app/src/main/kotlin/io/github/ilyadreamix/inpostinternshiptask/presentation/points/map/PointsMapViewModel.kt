@@ -8,6 +8,7 @@ import io.github.ilyadreamix.inpostinternshiptask.domain.points.models.PickupPoi
 import io.github.ilyadreamix.inpostinternshiptask.domain.points.options.ListPickupPointsOption
 import io.github.ilyadreamix.inpostinternshiptask.domain.points.usecases.ListPickupPointsUseCase
 import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.composables.PointsMapMarkerData
+import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.data.PointsMapCache
 import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.data.PointsMapState
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -23,8 +24,8 @@ internal class PointsMapViewModel(private val listPointsUC: ListPickupPointsUseC
   private val _state = MutableStateFlow(PointsMapState())
   val state = _state.asStateFlow()
 
-  private val cache = LinkedHashMap<String, PointsMapMarkerData>() // No mutex: previous job is canceled before new one
-                                                                   // starts, so cache writes never overlap
+  private val cache = PointsMapCache(maxSize = DefaultCacheSize) // No mutex: previous job is canceled before new one
+                                                                 // starts, so cache writes never overlap
   private var cameraJob: Job? = null
 
   fun onCameraIdle(center: LatLng) {
@@ -65,5 +66,6 @@ internal class PointsMapViewModel(private val listPointsUC: ListPickupPointsUseC
   companion object {
     private const val Tag = "PointsMapViewModel"
     private val CameraJobDebounce = 500.milliseconds
+    private const val DefaultCacheSize = 500
   }
 }
