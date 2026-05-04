@@ -54,8 +54,6 @@ internal fun PointsMapMarker(
     }
   )
 
-  val alphaAnimation = animateFloatAsState(if (state == PointsMapMarkerState.Hidden) 0f else 1f)
-
   val iconPainter = painterResource(R.drawable.mic_location_on)
   val easyAccessIconPainter = painterResource(R.drawable.mic_accessible)
 
@@ -77,7 +75,7 @@ internal fun PointsMapMarker(
       modifier = Modifier
         .size(MarkerSize)
         .graphicsLayer {
-          alpha = alphaAnimation.value
+          alpha = if (state == PointsMapMarkerState.Hidden) 0f else 1f
           scaleX = scaleAnimation.value
           scaleY = scaleAnimation.value
         }
