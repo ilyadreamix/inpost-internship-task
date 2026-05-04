@@ -3,23 +3,24 @@ package io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.compo
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import io.github.ilyadreamix.inpostinternshiptask.R
@@ -41,8 +42,8 @@ internal fun PointsMapScreenSnackBar(content: PointsMapScreenSnackBarContent?, m
     text = {
       Text(
         text = when (it) {
-          PointsMapScreenSnackBarContent.ZoomWarning -> stringResource(R.string.app_points_map_distance_warning)
-          PointsMapScreenSnackBarContent.Error -> stringResource(R.string.app_points_map_update_error)
+          PointsMapScreenSnackBarContent.ZoomWarning -> stringResource(R.string.app_map_distance_too_far)
+          PointsMapScreenSnackBarContent.Error -> stringResource(R.string.app_map_update_error)
         }
       )
     },
@@ -63,11 +64,10 @@ private fun SnackBarAnimator(
     targetState = content,
     contentKey = { it == null },
     transitionSpec = {
-      if (initialState == null || targetState == null) {
-        fadeIn() + slideInVertically { -it } togetherWith fadeOut() + slideOutVertically { -it }
-      } else {
-        fadeIn() togetherWith fadeOut()
-      }
+      slideInVertically { -it } +
+        scaleIn(transformOrigin = TransformOrigin(0.5f, 0f)) togetherWith
+        slideOutVertically { -it } +
+        scaleOut(transformOrigin = TransformOrigin(0.5f, 0f))
     }
   ) { contentOrNull ->
     if (contentOrNull == null) {
@@ -100,21 +100,24 @@ private fun SnackBar(
   text: @Composable () -> Unit,
   modifier: Modifier = Modifier
 ) {
-  Row(
+  Surface(
     modifier = modifier
+      .padding(bottom = PointsMapScreenOverlayElevation)
       .fillMaxWidth()
-      .padding(horizontal = AppTokens.Paddings.SizeScreen)
-      .background(color = SnackBarColor, shape = AppTokens.RoundedCornerShapes.MS)
-      .padding(all = AppTokens.Spacings.MS),
-    horizontalArrangement = Arrangement.spacedBy(AppTokens.Spacings.MS),
-    verticalAlignment = Alignment.CenterVertically
+      .padding(horizontal = AppTokens.Paddings.SizeScreen),
+    color = MaterialTheme.colorScheme.surface,
+    shadowElevation = PointsMapScreenOverlayElevation,
+    shape = AppTokens.RoundedCornerShapes.MS
   ) {
-    CompositionLocalProvider(LocalContentColor provides SnackBarContentColor) {
+    Row(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(all = AppTokens.Spacings.MS),
+      horizontalArrangement = Arrangement.spacedBy(AppTokens.Spacings.MS),
+      verticalAlignment = Alignment.CenterVertically
+    ) {
       icon()
       text()
     }
   }
 }
-
-private val SnackBarColor = Color.White
-private val SnackBarContentColor = Color.Black

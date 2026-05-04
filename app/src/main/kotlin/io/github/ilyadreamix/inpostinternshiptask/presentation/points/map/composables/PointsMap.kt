@@ -27,19 +27,26 @@ internal fun PointsMap(
   state: PointsMapState,
   cameraPositionState: CameraPositionState,
   onMarkerFocused: (marker: PointsMapMarkerData) -> Unit,
-  contentPadding: PaddingValues
+  contentPadding: PaddingValues,
+  disableGestures: Boolean,
+  modifier: Modifier = Modifier
 ) {
 
   val coroutineScope = rememberCoroutineScope()
 
   GoogleMap(
-    modifier = Modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize(),
     uiSettings = MapUiSettings(
       compassEnabled = false,
       indoorLevelPickerEnabled = false,
       mapToolbarEnabled = false,
       myLocationButtonEnabled = false,
-      zoomControlsEnabled = false
+      zoomControlsEnabled = false,
+      scrollGesturesEnabled = !disableGestures,
+      tiltGesturesEnabled = !disableGestures,
+      zoomGesturesEnabled = !disableGestures,
+      rotationGesturesEnabled = !disableGestures,
+      scrollGesturesEnabledDuringRotateOrZoom = true
     ),
     contentPadding = contentPadding,
     mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
@@ -73,7 +80,7 @@ internal fun PointsMap(
         return@Clustering true
       },
       onClusterItemClick = { marker ->
-        if (state.focusedMarker != null && state.focusedMarker.point.name != marker.point.name) {
+        if (state.focusedMarker != null) {
           return@Clustering true
         }
 

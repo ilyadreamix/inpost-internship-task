@@ -12,6 +12,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.graphics.drawscope.translate
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.clustering.ClusterItem
 import io.github.ilyadreamix.inpostinternshiptask.R
 import io.github.ilyadreamix.inpostinternshiptask.domain.points.models.PickupPointModel
+import io.github.ilyadreamix.inpostinternshiptask.domain.points.models.isOpen
 
 internal data class PointsMapMarkerData(val point: PickupPointModel) : ClusterItem {
   override fun getPosition() = LatLng(point.location.latitude, point.location.longitude)
@@ -39,10 +41,19 @@ internal fun PointsMapMarker(
   state: PointsMapMarkerState,
   modifier: Modifier = Modifier
 ) {
+
+  val isOpen = data.point.isOpen()
+
   // At first, it was supposed to be passed to drawMarker* functions' sizeFraction parameter,
   // but I've decided to pass it to Canvas graphicsLayer instead because of the lags.
   // It looks worse, but does not make the map too chunky
-  val scaleAnimation = animateFloatAsState(state.scale)
+  val scaleAnimation = animateFloatAsState(
+    when (state) {
+      PointsMapMarkerState.Visible if !isOpen -> state.scale * 0.75f
+      else -> state.scale
+    }
+  )
+
   val alphaAnimation = animateFloatAsState(if (state == PointsMapMarkerState.Hidden) 0f else 1f)
 
   val iconPainter = painterResource(R.drawable.mic_location_on)
@@ -53,7 +64,13 @@ internal fun PointsMapMarker(
   val colorOutline = MaterialTheme.colorScheme.outline
 
   Box(
-    modifier = modifier.size(MarkerSize * PointsMapMarkerState.Focused.scale),
+    modifier = modifier
+      .size(MarkerSize * PointsMapMarkerState.Focused.scale)
+      .graphicsLayer {
+        val colorMatrix = ColorMatrix()
+        colorMatrix.setToSaturation(if (isOpen) 1f else 0f)
+        colorFilter = ColorFilter.colorMatrix(colorMatrix)
+      },
     contentAlignment = Alignment.Center
   ) {
     Canvas(

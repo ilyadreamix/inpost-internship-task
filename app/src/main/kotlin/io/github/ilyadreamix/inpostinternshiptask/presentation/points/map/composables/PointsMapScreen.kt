@@ -1,31 +1,31 @@
 package io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.composables
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraMoveStartedReason
@@ -41,6 +41,8 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.compose.viewmodel.koinViewModel
+
+internal val PointsMapScreenOverlayElevation = 6.dp
 
 @Composable
 internal fun PointsMapScreen(viewModel: PointsMapViewModel = koinViewModel()) {
@@ -65,49 +67,59 @@ internal fun PointsMapScreen(
   onUnfocusMarker: () -> Unit,
   modifier: Modifier = Modifier
 ) {
+
   val coroutineScope = rememberCoroutineScope()
   val bottomSheetState = rememberSKBottomSheetState(visible = false)
 
   val cameraPositionState = rememberCameraPositionState { position = ScreenMapPolandCenter }
 
+  val snackBarContent = when {
+    state.focusedMarker != null -> null
+    cameraPositionState.position.zoom < ScreenMapZoomThreshold -> PointsMapScreenSnackBarContent.ZoomWarning
+    state.hasError -> PointsMapScreenSnackBarContent.Error
+    else -> null
+  }
+
   val mapContentPadding = calculateScreenMapContentPadding(bottomSheetState)
+
+  val dismissSheetAndUnfocus: () -> Unit = {
+    coroutineScope.launch {
+      bottomSheetState.hide()
+      onUnfocusMarker()
+    }
+  }
 
   Box(modifier = modifier.fillMaxSize()) {
     PointsMap(
       state = state,
       cameraPositionState = cameraPositionState,
       onMarkerFocused = onFocusMarker,
-      contentPadding = mapContentPadding.value
+      contentPadding = mapContentPadding.value,
+      disableGestures = state.focusedMarker != null
     )
 
-    Column(modifier = Modifier.fillMaxWidth()) {
-      PointsMapScreenSnackBar(
-        content = when {
-          cameraPositionState.position.zoom < ScreenMapZoomThreshold -> PointsMapScreenSnackBarContent.ZoomWarning
-          state.hasError -> PointsMapScreenSnackBarContent.Error
-          else -> null
-        },
-        modifier = Modifier
-          .statusBarsPadding()
-          .padding(top = AppTokens.Paddings.SizeScreen)
-      )
-    }
+    PointsMapScreenSnackBar(
+      content = snackBarContent,
+      modifier = Modifier
+        .statusBarsPadding()
+        .padding(top = AppTokens.Paddings.SizeScreen)
+    )
+
+    PointsMapBackButton(
+      visible = state.focusedMarker != null,
+      onClick = dismissSheetAndUnfocus,
+      modifier = Modifier
+        .statusBarsPadding()
+        .padding(top = AppTokens.Paddings.SizeScreen, start = AppTokens.Paddings.SizeScreen)
+    )
 
     AppBottomSheetContent(
       state = bottomSheetState,
-      onHide = {
-        coroutineScope.launch {
-          bottomSheetState.hide()
-          onUnfocusMarker()
-        }
-      },
+      onHide = { dismissSheetAndUnfocus() },
       modifier = Modifier.align(Alignment.BottomCenter)
     ) {
       state.focusedMarker?.let {
-        Text(
-          text = it.point.name,
-          modifier = Modifier.navigationBarsPadding()
-        )
+        PointsMapSheetContent(point = it.point)
       }
     }
   }
@@ -116,6 +128,19 @@ internal fun PointsMapScreen(
     if (state.focusedMarker != null) {
       bottomSheetState.show()
     }
+  }
+
+  LaunchedEffect(Unit) {
+
+    var lastProgress = 0f
+
+    snapshotFlow { bottomSheetState.animationProgress }
+      .collect { progress ->
+        val delta = progress - lastProgress
+        val scrollY = delta * bottomSheetState.height / 2
+        cameraPositionState.move(CameraUpdateFactory.scrollBy(0f, scrollY))
+        lastProgress = progress
+      }
   }
 
   LaunchedEffect(cameraPositionState.isMoving) {
@@ -135,7 +160,12 @@ internal fun PointsMapScreen(
       }
     }
   }
+
+  BackHandler(enabled = state.focusedMarker != null, onBack = dismissSheetAndUnfocus)
 }
+
+private const val ScreenMapZoomThreshold = 10f
+private val ScreenMapPolandCenter = CameraPosition.fromLatLngZoom(LatLng(52.0, 19.0), 5.5f)
 
 @Composable
 private fun calculateScreenMapContentPadding(bottomSheetState: SKBottomSheetState): State<PaddingValues> {
@@ -160,9 +190,6 @@ private fun calculateScreenMapContentPadding(bottomSheetState: SKBottomSheetStat
     }
   }
 }
-
-private const val ScreenMapZoomThreshold = 10f
-private val ScreenMapPolandCenter = CameraPosition.fromLatLngZoom(LatLng(52.0, 19.0), 5.5f)
 
 @Preview
 @Composable

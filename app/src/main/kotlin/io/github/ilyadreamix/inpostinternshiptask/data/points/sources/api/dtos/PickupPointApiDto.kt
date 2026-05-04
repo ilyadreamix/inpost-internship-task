@@ -15,7 +15,10 @@ internal data class PickupPointApiDto(
   @SerialName("easy_access_zone") val easyAccessZone: Boolean,
   @SerialName("image_url") val imageUrl: String,
   @SerialName("country") val country: String,
-  @SerialName("location_type") val locationType: String
+  @SerialName("location_type") val locationType: String,
+  @SerialName("operating_hours_extended") val operatingHoursExtended: OperatingHoursExtended? = null,
+  @SerialName("location_description") val description: String? = null,
+  @SerialName("address_details") val addressDetails: AddressDetails
 ) {
   @Serializable
   data class Location(
@@ -27,6 +30,31 @@ internal data class PickupPointApiDto(
   data class Address(
     @SerialName("line1") val line1: String,
     @SerialName("line2") val line2: String
+  )
+
+  @Serializable
+  data class OperatingHoursExtended(@SerialName("customer") val customer: Customer? = null) {
+    @Serializable
+    data class Customer(
+      @SerialName("monday") val monday: List<Interval> = emptyList(),
+      @SerialName("tuesday") val tuesday: List<Interval> = emptyList(),
+      @SerialName("wednesday") val wednesday: List<Interval> = emptyList(),
+      @SerialName("thursday") val thursday: List<Interval> = emptyList(),
+      @SerialName("friday") val friday: List<Interval> = emptyList(),
+      @SerialName("saturday") val saturday: List<Interval> = emptyList(),
+      @SerialName("sunday") val sunday: List<Interval> = emptyList(),
+    ) {
+      @Serializable
+      data class Interval(@SerialName("start") val start: Int, @SerialName("end") val end: Int)
+    }
+  }
+
+  @Serializable
+  data class AddressDetails(
+    @SerialName("city") val city: String,
+    @SerialName("province") val province: String,
+    @SerialName("street") val street: String,
+    @SerialName("building_number") val buildingNumber: String? = null,
   )
 
   companion object {

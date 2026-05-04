@@ -16,8 +16,29 @@ internal class RealPickupPointMapper : PickupPointMapper {
     easyAccess = dto.easyAccessZone,
     imageUrl = dto.imageUrl,
     country = apiCountryToModel(dto.country),
-    locationType = apiLocationTypeToModel(dto.locationType)
+    locationType = apiLocationTypeToModel(dto.locationType),
+    operatingHours = dto.operatingHoursExtended?.customer?.let {
+      PickupPointModel.OperatingHours(
+        monday = it.monday.toModel(),
+        tuesday = it.tuesday.toModel(),
+        wednesday = it.wednesday.toModel(),
+        thursday = it.thursday.toModel(),
+        friday = it.friday.toModel(),
+        saturday = it.saturday.toModel(),
+        sunday = it.sunday.toModel()
+      )
+    },
+    description = dto.description,
+    addressDetails = PickupPointModel.AddressDetails(
+      city = dto.addressDetails.city,
+      province = dto.addressDetails.province,
+      street = dto.addressDetails.street,
+      buildingNumber = dto.addressDetails.buildingNumber
+    )
   )
+
+  private fun List<PickupPointApiDto.OperatingHoursExtended.Customer.Interval>.toModel() =
+    map { PickupPointModel.OperatingHours.Interval(it.start, it.end) }
 
   override fun apiCountryToModel(country: String) = when (country) {
     PickupPointApiDto.CountryPoland -> PickupPointModel.Country.Poland

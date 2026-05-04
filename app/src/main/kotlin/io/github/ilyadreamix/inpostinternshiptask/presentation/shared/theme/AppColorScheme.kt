@@ -14,12 +14,14 @@ private val LightOnSurface = Color(0xFF000000)
 private val LightBackground = Color(0xFFF4F4F4)
 private val LightOnBackground = Color(0xFF000000)
 private val LightOutline = Color(0xFF000000)
+private val LightSurfaceContainerLow = Color(0xFFF4F4F4)
 
 private val DarkSurface = Color(0xFF1D1D1D)
 private val DarkOnSurface = Color(0xFFFFFFFF)
 private val DarkBackground = Color(0xFF1D1D1D)
 private val DarkOnBackground = Color(0xFFFFFFFF)
 private val DarkOutline = Color(0xFFFFFFFF)
+private val DarkSurfaceContainerLow = Color(0xFF1D1D1D)
 
 internal val LightColorScheme = lightColorScheme().copy(
   primary = Primary,
@@ -30,7 +32,8 @@ internal val LightColorScheme = lightColorScheme().copy(
   onSurface = LightOnSurface,
   background = LightBackground,
   onBackground = LightOnBackground,
-  outline = LightOutline
+  outline = LightOutline,
+  surfaceContainerLow = LightSurfaceContainerLow
 )
 
 internal val DarkColorScheme = darkColorScheme().copy(
@@ -42,7 +45,8 @@ internal val DarkColorScheme = darkColorScheme().copy(
   onSurface = DarkOnSurface,
   background = DarkBackground,
   onBackground = DarkOnBackground,
-  outline = DarkOutline
+  outline = DarkOutline,
+  surfaceContainerLow = DarkSurfaceContainerLow
 )
 
 

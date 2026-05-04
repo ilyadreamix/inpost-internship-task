@@ -58,11 +58,8 @@ internal fun AppBottomSheetContent(
     container = SKBottomSheetContainer(
       maxWidth = 640.dp,
       color = MaterialTheme.colorScheme.surfaceContainerLow,
-      shape = MaterialTheme.shapes.extraLarge.copy(
-        bottomStart = CornerSize(0.dp),
-        bottomEnd = CornerSize(0.dp),
-      ),
-      elevation = 1.dp
+      shape = MaterialTheme.shapes.extraLarge.copy(bottomStart = CornerSize(0.dp), bottomEnd = CornerSize(0.dp)),
+      elevation = 12.dp
     ),
     hideOptions = SKBottomSheetHideOptions(),
     insets = SKInsets(WindowInsets.safeDrawing),

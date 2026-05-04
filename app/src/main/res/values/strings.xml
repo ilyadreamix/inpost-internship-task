@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name">InPost Map</string>
-  <string name="app_points_map_distance_warning">Too far! Zoom in on the map.</string>
-  <string name="app_points_map_update_error">Oops! The map update failed. Try again.</string>
+  <string name="app_map_distance_too_far">Too far! Zoom in on the map.</string>
+  <string name="app_map_update_error">Oops! The map update failed. Try again.</string>
+  <string name="app_address">%1$s Street %2$s\n%3$s, %4$s</string>
+  <string name="app_address_no_number">%1$s Street\n%2$s, %3$s</string>
+  <string name="app_location">Location</string>
+  <string name="app_location_indoor">Indoor</string>
+  <string name="app_location_outdoor">Outdoor</string>
+  <string name="app_operating_hours">Operating hours</string>
+  <string name="app_open">Open</string>
+  <string name="app_closed">Closed</string>
+  <string name="app_weekday_monday">Monday</string>
+  <string name="app_weekday_tuesday">Tuesday</string>
+  <string name="app_weekday_wednesday">Wednesday</string>
+  <string name="app_weekday_thursday">Thursday</string>
+  <string name="app_weekday_friday">Friday</string>
+  <string name="app_weekday_saturday">Saturday</string>
+  <string name="app_weekday_sunday">Sunday</string>
+  <string name="app_easy_access">Easy access</string>
+  <string name="app_operating_hours_24_7">All day and all week (24/7)</string>
+  <string name="app_back_to_map">Back to map</string>
 </resources>

@@ -1,7 +1,7 @@
 [versions]
 # noinspection NewerVersionAvailable
 kotlin = "2.2.10"
-# kotlinx-datetime = "0.7.1"
+kotlinx-datetime = "0.7.1"
 kotlinx-serialization-json = "1.11.0"
 android-gradle = "9.2.0"
 androidx-core = "1.18.0"
@@ -22,7 +22,7 @@ app-version-code = "1"
 app-version-name = "0.0.1"
 
 [libraries]
-# kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
 androidx-appCompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appCompat" }
@@ -48,7 +48,7 @@ google-maps-compose-utils = { module = "com.google.maps.android:maps-compose-uti
 swissKnife = { module = "com.github.ilyadreamix.swiss-knife:dialogs", version.ref = "swissKnife" }
 
 [bundles]
-kotlin = ["kotlinx-serialization-json"]
+kotlin = ["kotlinx-serialization-json", "kotlinx-datetime"]
 androidx = ["androidx-core", "androidx-appCompat", "androidx-activity-compose"]
 compose = ["compose-ui", "compose-foundation", "compose-runtime", "compose-material3", "compose-ui-tooling-preview"]
 koin = ["koin-core", "koin-android", "koin-compose"]
