@@ -1,24 +1,44 @@
 package io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.composables
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import com.google.maps.android.clustering.ClusterItem
 import com.google.maps.android.clustering.view.DefaultClusterRenderer
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.ComposeMapColorScheme
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.GoogleMapComposable
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.MapsComposeExperimentalApi
 import com.google.maps.android.compose.clustering.Clustering
+import io.github.ilyadreamix.inpostinternshiptask.R
 import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.data.PointsMapState
+import io.github.ilyadreamix.inpostinternshiptask.presentation.shared.theme.AppTokens
 import kotlinx.coroutines.launch
 
 @OptIn(MapsComposeExperimentalApi::class)
@@ -29,6 +49,7 @@ internal fun PointsMap(
   onMarkerFocused: (marker: PointsMapMarkerData) -> Unit,
   contentPadding: PaddingValues,
   disableGestures: Boolean,
+  currentLocation: LatLng?,
   modifier: Modifier = Modifier
 ) {
 
@@ -43,7 +64,7 @@ internal fun PointsMap(
       myLocationButtonEnabled = false,
       zoomControlsEnabled = false,
       scrollGesturesEnabled = !disableGestures,
-      tiltGesturesEnabled = !disableGestures,
+      tiltGesturesEnabled = false,
       zoomGesturesEnabled = !disableGestures,
       rotationGesturesEnabled = false,
       scrollGesturesEnabledDuringRotateOrZoom = true,
@@ -53,6 +74,11 @@ internal fun PointsMap(
     properties = MapProperties(latLngBoundsForCameraTarget = MapPolandBoundaries, minZoomPreference = MapMinZoom),
     cameraPositionState = cameraPositionState
   ) {
+    MapCurrentLocationIndicator(
+      visible = state.focusedMarker == null,
+      latLng = currentLocation
+    )
+
     Clustering(
       items = state.markers,
       clusterContent = { cluster -> PointsMapCluster(data = cluster) },
@@ -90,13 +116,64 @@ internal fun PointsMap(
 
         coroutineScope.launch {
           val newCameraLatLng = LatLng(marker.point.location.latitude, marker.point.location.longitude)
-          val newCamera = CameraUpdateFactory.newLatLngZoom(newCameraLatLng, MapMarkerZoomAfterFocus)
+          val newCamera = CameraUpdateFactory.newLatLngZoom(newCameraLatLng, PointsMapMarkerZoomAfterFocus)
           cameraPositionState.animate(newCamera)
           onMarkerFocused(marker)
         }
 
         return@Clustering true
       }
+    )
+  }
+}
+
+@OptIn(MapsComposeExperimentalApi::class)
+@GoogleMapComposable
+@Composable
+private fun MapCurrentLocationIndicator(visible: Boolean, latLng: LatLng?) {
+  // I know what it looks like, but I haven't found the way to display a single composable marker.
+  // Please consider that it's a workaround.
+
+  if (latLng != null) {
+    Clustering(
+      items = listOf(
+        object : ClusterItem {
+          override fun getPosition() = latLng
+          override fun getTitle() = null
+          override fun getSnippet() = null
+          override fun getZIndex() = null
+        }
+      ),
+      clusterItemContent = {
+
+        val scaleAnimation = animateFloatAsState(if (visible) 1f else 0f)
+
+        Column(
+          modifier = Modifier.graphicsLayer { scaleX = scaleAnimation.value; scaleY = scaleAnimation.value },
+          verticalArrangement = Arrangement.Center,
+          horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+          Box(
+            modifier = Modifier
+              .padding(bottom = AppTokens.Spacings.XS)
+              .size(MapCurrentLocationIndicatorSize)
+              .background(color = MapCurrentLocationIndicatorColor.copy(alpha = 0.5f), shape = CircleShape)
+              .border(
+                color = MaterialTheme.colorScheme.onPrimary,
+                shape = CircleShape,
+                width = PointsMapMarkerBackgroundBorderThickness
+              )
+              .padding(MapCurrentLocationIndicatorPadding)
+              .background(color = MapCurrentLocationIndicatorColor, shape = CircleShape)
+          )
+
+          Text(
+            text = stringResource(R.string.app_you_are_here),
+            color = MaterialTheme.colorScheme.onSurface
+          )
+        }
+      },
+      onClusterItemClick = { true }
     )
   }
 }
@@ -119,8 +196,12 @@ private fun CameraPositionState.calculateMapMarkerVisible(
   }
 }
 
+internal const val PointsMapMarkerZoomAfterFocus = 18f
+
 private const val MapMinClusterSize = 4
 private const val MapMinZoom = 5.5f
 private val MapPolandBoundaries = LatLngBounds(LatLng(48.5, 14.3), LatLng(54.6, 24.6))
 private const val MapClusterClickZoomStep = 2f
-private const val MapMarkerZoomAfterFocus = 18f
+private val MapCurrentLocationIndicatorColor = Color(0xFF0047FF)
+private val MapCurrentLocationIndicatorSize = 42.dp
+private val MapCurrentLocationIndicatorPadding = 6.dp

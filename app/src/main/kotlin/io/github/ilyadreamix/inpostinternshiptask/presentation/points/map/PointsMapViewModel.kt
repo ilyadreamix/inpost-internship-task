@@ -63,6 +63,10 @@ internal class PointsMapViewModel(private val listPointsUC: ListPickupPointsUseC
     _state.update { it.copy(focusedMarker = marker) }
   }
 
+  fun updateLocationDeniedError(value: Boolean) {
+    _state.update { it.copy(locationDeniedError = value) }
+  }
+
   companion object {
     private const val Tag = "PointsMapViewModel"
     private val CameraJobDebounce = 500.milliseconds

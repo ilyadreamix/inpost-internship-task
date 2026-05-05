@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="app_name">InPost Map</string>
+  <string name="app_name">Mapa InPost</string>
   <string name="app_map_distance_too_far">Zbyt daleko! Przybliż widok mapy.</string>
   <string name="app_map_update_error">Ups! Błąd aktualizacji mapy. Spróbuj ponownie.</string>
   <string name="app_address">Ul. %1$s %2$s\n%3$s, %4$s</string>
@@ -21,4 +21,9 @@
   <string name="app_easy_access">Łatwy dostęp</string>
   <string name="app_operating_hours_24_7">Całą dobę, 7 dni w tygodniu (24/7)</string>
   <string name="app_back_to_map">Powrót do mapy</string>
+  <string name="app_got_it">Rozumiem</string>
+  <string name="app_location_permission_denied">Odmowa dostępu do lokalizacji!</string>
+  <string name="app_location_permission_denied_text">Nie będziesz mógł zobaczyć swojej lokalizacji. \nAby włączyć tę funkcję, przyznaj uprawnienia w ustawieniach aplikacji.</string>
+  <string name="app_show_me">Pokaż mnie</string>
+  <string name="app_you_are_here">Jesteś tu</string>
 </resources>

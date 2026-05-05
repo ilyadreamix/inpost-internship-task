@@ -5,5 +5,6 @@ import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.compos
 internal data class PointsMapState(
   val markers: List<PointsMapMarkerData> = emptyList(),
   val hasError: Boolean = false,
-  val focusedMarker: PointsMapMarkerData? = null
+  val focusedMarker: PointsMapMarkerData? = null,
+  val locationDeniedError: Boolean = false
 )

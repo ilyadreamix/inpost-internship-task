@@ -13,7 +13,7 @@ dependencies {
   implementation(libs.bundles.koin)
   implementation(libs.bundles.ktor)
   implementation(libs.bundles.coil)
-  implementation(libs.bundles.google.maps)
+  implementation(libs.bundles.google)
 
   implementation(libs.swissKnife)
 

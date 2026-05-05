@@ -1,6 +1,10 @@
 package io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.composables
 
+import android.Manifest
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -12,30 +16,42 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.CameraMoveStartedReason
 import com.google.maps.android.compose.rememberCameraPositionState
+import io.github.ilyadreamix.inpostinternshiptask.R
 import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.PointsMapViewModel
 import io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.data.PointsMapState
 import io.github.ilyadreamix.inpostinternshiptask.presentation.shared.composables.AppBottomSheetContent
+import io.github.ilyadreamix.inpostinternshiptask.presentation.shared.composables.AppInfoAlert
 import io.github.ilyadreamix.inpostinternshiptask.presentation.shared.theme.AppTheme
 import io.github.ilyadreamix.inpostinternshiptask.presentation.shared.theme.AppTokens
+import io.github.ilyadreamix.inpostinternshiptask.shared.extensions.permissionGranted
 import io.github.ilyadreamix.swissknife.dialogs.bottomsheet.SKBottomSheetState
 import io.github.ilyadreamix.swissknife.dialogs.bottomsheet.rememberSKBottomSheetState
 import kotlinx.coroutines.NonCancellable
@@ -55,6 +71,7 @@ internal fun PointsMapScreen(viewModel: PointsMapViewModel = koinViewModel()) {
     onCameraIdle = viewModel::onCameraIdle,
     onCameraStartedMoving = viewModel::onCameraStartedMoving,
     onFocusMarker = viewModel::updateFocusedMarker,
+    onUpdateLocationDeniedError = viewModel::updateLocationDeniedError,
     onUnfocusMarker = { viewModel.updateFocusedMarker(null) }
   )
 }
@@ -66,15 +83,44 @@ internal fun PointsMapScreen(
   onCameraStartedMoving: () -> Unit,
   onFocusMarker: (marker: PointsMapMarkerData) -> Unit,
   onUnfocusMarker: () -> Unit,
+  onUpdateLocationDeniedError: (value: Boolean) -> Unit,
   modifier: Modifier = Modifier
 ) {
+  val context = LocalContext.current
   val density = LocalDensity.current
+
   val statusBarInsets = WindowInsets.statusBars.asPaddingValues()
 
   val coroutineScope = rememberCoroutineScope()
   val bottomSheetState = rememberSKBottomSheetState(visible = false)
-
   val cameraPositionState = rememberCameraPositionState { position = ScreenMapPolandCenter }
+
+  val currentLocation = rememberSaveable { mutableStateOf<LatLng?>(null) }
+  val requestPermissionAndFocusCurrentLocation = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.RequestPermission(),
+    onResult = {
+      val hasFinePermission = context.permissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)
+      val hasCoarsePermission = context.permissionGranted(Manifest.permission.ACCESS_COARSE_LOCATION)
+
+      if (hasFinePermission || hasCoarsePermission) {
+        @SuppressLint("MissingPermission")
+        LocationServices.getFusedLocationProviderClient(context).lastLocation.addOnSuccessListener { location ->
+          if (location != null) {
+            val newLatLng = LatLng(location.latitude, location.longitude)
+            val newCamera = CameraUpdateFactory.newLatLngZoom(newLatLng, PointsMapMarkerZoomAfterFocus)
+
+            coroutineScope.launch { cameraPositionState.animate(newCamera) }
+            currentLocation.value = newLatLng
+          }
+        }
+      } else {
+        onUpdateLocationDeniedError(true)
+      }
+    }
+  )
+  val requestLocationPermissionAndFocusCurrentLocation: () -> Unit = {
+    requestPermissionAndFocusCurrentLocation.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+  }
 
   val snackBarContent = when {
     state.focusedMarker != null -> null
@@ -98,7 +144,8 @@ internal fun PointsMapScreen(
       cameraPositionState = cameraPositionState,
       onMarkerFocused = onFocusMarker,
       contentPadding = mapContentPadding.value,
-      disableGestures = state.focusedMarker != null
+      disableGestures = state.focusedMarker != null,
+      currentLocation = currentLocation.value
     )
 
     PointsMapScreenSnackBar(
@@ -106,12 +153,27 @@ internal fun PointsMapScreen(
       modifier = Modifier.statusBarsPadding()
     )
 
-    PointsMapBackButton(
+    PointsControlButton(
       visible = state.focusedMarker != null,
       onClick = dismissSheetAndUnfocus,
+      text = { Text(text = stringResource(R.string.app_back_to_map)) },
+      icon = { Icon(painter = painterResource(R.drawable.mic_arrow_back), contentDescription = null) },
+      snapAnimationToStart = true,
       modifier = Modifier
         .statusBarsPadding()
         .padding(start = AppTokens.Paddings.SizeScreen)
+    )
+
+    PointsControlButton(
+      visible = state.focusedMarker == null,
+      onClick = requestLocationPermissionAndFocusCurrentLocation,
+      text = { Text(text = stringResource(R.string.app_show_me)) },
+      icon = { Icon(painter = painterResource(R.drawable.mic_location_on), contentDescription = null) },
+      snapAnimationToStart = false,
+      modifier = Modifier
+        .align(Alignment.BottomEnd)
+        .statusBarsPadding()
+        .padding(end = AppTokens.Paddings.SizeScreen, bottom = AppTokens.Paddings.SizeScreen)
     )
 
     AppBottomSheetContent(
@@ -124,6 +186,19 @@ internal fun PointsMapScreen(
       }
     }
   }
+
+  AppInfoAlert(
+    visible = state.locationDeniedError,
+    onHide = { onUpdateLocationDeniedError(false) },
+    title = { Text(text = stringResource(R.string.app_location_permission_denied)) },
+    text = { Text(text = stringResource(R.string.app_location_permission_denied_text)) },
+    hideButton = {
+      Button(
+        onClick = { onUpdateLocationDeniedError(false) },
+        content = { Text(text = stringResource(R.string.app_got_it)) }
+      )
+    }
+  )
 
   LaunchedEffect(state.focusedMarker) {
     if (state.focusedMarker != null) {
@@ -206,7 +281,8 @@ private fun ScreenPreview() {
       onCameraIdle = { /* ... */ },
       onCameraStartedMoving = { /* ... */ },
       onFocusMarker = { /* ... */ },
-      onUnfocusMarker = { /* ... */ }
+      onUnfocusMarker = { /* ... */ },
+      onUpdateLocationDeniedError = { /* ... */ }
     )
   }
 }

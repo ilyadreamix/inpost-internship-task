@@ -77,13 +77,12 @@ internal fun PointsMapMarker(
       modifier = Modifier
         .size(MarkerSize)
         .graphicsLayer {
-          alpha = if (state == PointsMapMarkerState.Hidden) 0f else 1f
           scaleX = scaleAnimation.value
           scaleY = scaleAnimation.value
         }
     ) {
 
-      val markerInsetPx = MarkerInset.toPx() // * sizeFraction.value
+      val markerInsetPx = MapMarkerInset.toPx() // * sizeFraction.value
 
       inset(horizontal = markerInsetPx, vertical = markerInsetPx) {
         drawMarkerBackground(
@@ -113,14 +112,14 @@ internal fun PointsMapMarker(
 }
 
 private val MarkerSize = 48.dp
-private val MarkerInset = 6.dp
+private val MapMarkerInset = 6.dp
 
 private fun DrawScope.drawMarkerBackground(color: Color, borderColor: Color, sizeFraction: Float = 1f) {
   drawCircle(color = borderColor, radius = size.minDimension / 2)
-  drawCircle(color = color, radius = (size.minDimension / 2) - (MarkerBackgroundBorderThickness.toPx() * sizeFraction))
+  drawCircle(color = color, radius = (size.minDimension / 2) - (PointsMapMarkerBackgroundBorderThickness.toPx() * sizeFraction))
 }
 
-private val MarkerBackgroundBorderThickness = 1.dp
+internal val PointsMapMarkerBackgroundBorderThickness = 1.dp
 
 private fun DrawScope.drawMarkerIcon(painter: Painter, color: Color, sizeFraction: Float = 1f) {
 
@@ -139,7 +138,7 @@ private fun DrawScope.drawMarkerIcon(painter: Painter, color: Color, sizeFractio
 private val MarkerIconSize = 20.dp
 
 private fun DrawScope.drawMarkerEasyAccessIcon(painter: Painter, borderColor: Color, sizeFraction: Float = 1f) {
-  val borderThicknessPx = MarkerBackgroundBorderThickness.toPx() * sizeFraction
+  val borderThicknessPx = PointsMapMarkerBackgroundBorderThickness.toPx() * sizeFraction
   val borderCornerRadiusPx = MarkerEasyAccessBorderCornerRadius.toPx() * sizeFraction
   val cornerRadiusPx = MarkerEasyAccessCornerRadius.toPx() * sizeFraction
 
