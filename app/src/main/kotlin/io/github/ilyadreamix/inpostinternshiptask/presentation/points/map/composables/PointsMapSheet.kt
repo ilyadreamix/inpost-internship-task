@@ -188,7 +188,7 @@ private fun ContentOperatingHours(point: PickupPointModel, modifier: Modifier = 
             fontWeight = FontWeight.Bold
           )
         },
-        color = if (isOpen) ContentChipClosedColor else ContentChipOpenColor,
+        color = if (isOpen) ContentChipOpenColor else ContentChipClosedColor,
         contentColor = Color.White
       )
     }
@@ -282,8 +282,8 @@ private fun ContentLocation(point: PickupPointModel, modifier: Modifier = Modifi
   }
 }
 
-private val ContentChipClosedColor = Color(0xFF15A01C)
-private val ContentChipOpenColor = Color(0xFFDC0000)
+private val ContentChipOpenColor = Color(0xFF15A01C)
+private val ContentChipClosedColor = Color(0xFFDC0000)
 
 @Composable
 private fun ContentChip(
