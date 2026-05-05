@@ -31,7 +31,7 @@ The map also assists with navigation and provides feedback:
 
 - **Smart Zoom:** If the user is zoomed out too far, the app suggests zooming in for better visibility.
 - **Error Handling:** The app will notify the user if there is an issue loading the data.
-- **Current Location:** Users can tap a dedicated button to jump to their current position and save it for easier navigation in the future.
+- **Current Location:** Users can tap a dedicated button to jump to their current position.
 
 When you tap a parcel locker icon, the app switches into what I call **"focus mode"**. In this mode, you can view detailed information about the location. Read more about this mode below.
 
