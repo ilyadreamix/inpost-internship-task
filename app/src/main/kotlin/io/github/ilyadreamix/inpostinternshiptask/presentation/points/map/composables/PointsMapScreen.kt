@@ -145,7 +145,7 @@ internal fun PointsMapScreen(
       onMarkerFocused = onFocusMarker,
       contentPadding = mapContentPadding.value,
       disableGestures = state.focusedMarker != null,
-      currentLocation = currentLocation.value
+      currentLocation = currentLocation.value.takeIf { state.focusedMarker == null }
     )
 
     PointsMapScreenSnackBar(

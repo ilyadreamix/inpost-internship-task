@@ -1,6 +1,5 @@
 package io.github.ilyadreamix.inpostinternshiptask.presentation.points.map.composables
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +19,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -74,10 +72,8 @@ internal fun PointsMap(
     properties = MapProperties(latLngBoundsForCameraTarget = MapPolandBoundaries, minZoomPreference = MapMinZoom),
     cameraPositionState = cameraPositionState
   ) {
-    MapCurrentLocationIndicator(
-      visible = state.focusedMarker == null,
-      latLng = currentLocation
-    )
+
+    MapCurrentLocationIndicator(latLng = currentLocation)
 
     Clustering(
       items = state.markers,
@@ -130,7 +126,7 @@ internal fun PointsMap(
 @OptIn(MapsComposeExperimentalApi::class)
 @GoogleMapComposable
 @Composable
-private fun MapCurrentLocationIndicator(visible: Boolean, latLng: LatLng?) {
+private fun MapCurrentLocationIndicator(latLng: LatLng?) {
   // I know what it looks like, but I haven't found the way to display a single composable marker.
   // Please consider that it's a workaround.
 
@@ -145,11 +141,7 @@ private fun MapCurrentLocationIndicator(visible: Boolean, latLng: LatLng?) {
         }
       ),
       clusterItemContent = {
-
-        val scaleAnimation = animateFloatAsState(if (visible) 1f else 0f)
-
         Column(
-          modifier = Modifier.graphicsLayer { scaleX = scaleAnimation.value; scaleY = scaleAnimation.value },
           verticalArrangement = Arrangement.Center,
           horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -159,7 +151,7 @@ private fun MapCurrentLocationIndicator(visible: Boolean, latLng: LatLng?) {
               .size(MapCurrentLocationIndicatorSize)
               .background(color = MapCurrentLocationIndicatorColor.copy(alpha = 0.5f), shape = CircleShape)
               .border(
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = MaterialTheme.colorScheme.outline,
                 shape = CircleShape,
                 width = PointsMapMarkerBackgroundBorderThickness
               )
