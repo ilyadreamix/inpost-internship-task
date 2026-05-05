@@ -45,8 +45,8 @@ internal fun PointsMap(
       scrollGesturesEnabled = !disableGestures,
       tiltGesturesEnabled = !disableGestures,
       zoomGesturesEnabled = !disableGestures,
-      rotationGesturesEnabled = !disableGestures,
-      scrollGesturesEnabledDuringRotateOrZoom = true
+      rotationGesturesEnabled = false,
+      scrollGesturesEnabledDuringRotateOrZoom = true,
     ),
     contentPadding = contentPadding,
     mapColorScheme = ComposeMapColorScheme.FOLLOW_SYSTEM,
@@ -73,7 +73,11 @@ internal fun PointsMap(
       onClusterClick = { cluster ->
         coroutineScope.launch {
           val newCameraLatLng = cluster.position
-          val newCameraZoom = cameraPositionState.position.zoom + MapClusterClickZoomStep
+          val newCameraZoom = if (cameraPositionState.position.zoom < PointsMapScreenMapZoomThreshold) {
+            PointsMapScreenMapZoomThreshold + MapClusterClickZoomStep
+          } else {
+            cameraPositionState.position.zoom + MapClusterClickZoomStep
+          }
           val newCamera = CameraUpdateFactory.newLatLngZoom(newCameraLatLng, newCameraZoom)
           cameraPositionState.animate(newCamera)
         }

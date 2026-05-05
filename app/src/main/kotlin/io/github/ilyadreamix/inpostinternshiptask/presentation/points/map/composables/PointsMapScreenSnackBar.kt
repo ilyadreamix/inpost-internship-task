@@ -64,10 +64,10 @@ private fun SnackBarAnimator(
     targetState = content,
     contentKey = { it == null },
     transitionSpec = {
-      slideInVertically { -it } +
-        scaleIn(transformOrigin = TransformOrigin(0.5f, 0f)) togetherWith
-        slideOutVertically { -it } +
-        scaleOut(transformOrigin = TransformOrigin(0.5f, 0f))
+      scaleIn(transformOrigin = TransformOrigin(0.5f, 0f)) +
+        slideInVertically { -it } togetherWith
+        scaleOut(transformOrigin = TransformOrigin(0.5f, 0f)) +
+        slideOutVertically { -it }
     }
   ) { contentOrNull ->
     if (contentOrNull == null) {

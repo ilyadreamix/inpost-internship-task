@@ -4,6 +4,9 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 
+internal val AppColorEasyAccess = Color(0xFF0040FF)
+internal val AppColorOnEasyAccess = Color.White
+
 private val Primary = Color(0xFFFCCC06)
 private val OnPrimary = Color(0xFF353535)
 private val Secondary = Color(0xFFFF2B7E)
@@ -23,7 +26,7 @@ private val DarkOnBackground = Color(0xFFFFFFFF)
 private val DarkOutline = Color(0xFFFFFFFF)
 private val DarkSurfaceContainerLow = Color(0xFF1D1D1D)
 
-internal val LightColorScheme = lightColorScheme().copy(
+internal val AppLightColorScheme = lightColorScheme().copy(
   primary = Primary,
   onPrimary = OnPrimary,
   secondary = Secondary,
@@ -36,7 +39,7 @@ internal val LightColorScheme = lightColorScheme().copy(
   surfaceContainerLow = LightSurfaceContainerLow
 )
 
-internal val DarkColorScheme = darkColorScheme().copy(
+internal val AppDarkColorScheme = darkColorScheme().copy(
   primary = Primary,
   onPrimary = OnPrimary,
   secondary = Secondary,

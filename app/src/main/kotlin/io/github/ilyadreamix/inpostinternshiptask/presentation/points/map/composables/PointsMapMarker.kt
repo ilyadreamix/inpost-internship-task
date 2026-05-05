@@ -25,6 +25,8 @@ import com.google.maps.android.clustering.ClusterItem
 import io.github.ilyadreamix.inpostinternshiptask.R
 import io.github.ilyadreamix.inpostinternshiptask.domain.points.models.PickupPointModel
 import io.github.ilyadreamix.inpostinternshiptask.domain.points.models.isOpen
+import io.github.ilyadreamix.inpostinternshiptask.presentation.shared.theme.AppColorEasyAccess
+import io.github.ilyadreamix.inpostinternshiptask.presentation.shared.theme.AppColorOnEasyAccess
 
 internal data class PointsMapMarkerData(val point: PickupPointModel) : ClusterItem {
   override fun getPosition() = LatLng(point.location.latitude, point.location.longitude)
@@ -148,7 +150,7 @@ private fun DrawScope.drawMarkerEasyAccessIcon(painter: Painter, borderColor: Co
 
   inset(vertical = borderThicknessPx, horizontal = borderThicknessPx) {
     drawRoundRect(
-      color = MarkerEasyAccessIconBackgroundColor,
+      color = AppColorEasyAccess,
       cornerRadius = CornerRadius(cornerRadiusPx, cornerRadiusPx)
     )
 
@@ -159,13 +161,12 @@ private fun DrawScope.drawMarkerEasyAccessIcon(painter: Painter, borderColor: Co
       inset(vertical = iconInset, horizontal = iconInset) {
         draw(
           size = Size(size.minDimension, size.minDimension),
-          colorFilter = ColorFilter.tint(MarkerEasyAccessIconColor)
+          colorFilter = ColorFilter.tint(AppColorOnEasyAccess)
         )
       }
     }
   }
 }
-private val MarkerEasyAccessIconBackgroundColor = Color(0xFF0040FF)
-private val MarkerEasyAccessIconColor = Color.White
+
 private val MarkerEasyAccessBorderCornerRadius = 2.5.dp
 private val MarkerEasyAccessCornerRadius = 1.5.dp

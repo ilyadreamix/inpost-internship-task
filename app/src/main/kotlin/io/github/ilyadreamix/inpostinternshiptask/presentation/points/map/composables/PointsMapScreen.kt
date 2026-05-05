@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
@@ -67,6 +68,8 @@ internal fun PointsMapScreen(
   onUnfocusMarker: () -> Unit,
   modifier: Modifier = Modifier
 ) {
+  val density = LocalDensity.current
+  val statusBarInsets = WindowInsets.statusBars.asPaddingValues()
 
   val coroutineScope = rememberCoroutineScope()
   val bottomSheetState = rememberSKBottomSheetState(visible = false)
@@ -75,7 +78,7 @@ internal fun PointsMapScreen(
 
   val snackBarContent = when {
     state.focusedMarker != null -> null
-    cameraPositionState.position.zoom < ScreenMapZoomThreshold -> PointsMapScreenSnackBarContent.ZoomWarning
+    cameraPositionState.position.zoom < PointsMapScreenMapZoomThreshold -> PointsMapScreenSnackBarContent.ZoomWarning
     state.hasError -> PointsMapScreenSnackBarContent.Error
     else -> null
   }
@@ -100,9 +103,7 @@ internal fun PointsMapScreen(
 
     PointsMapScreenSnackBar(
       content = snackBarContent,
-      modifier = Modifier
-        .statusBarsPadding()
-        .padding(top = AppTokens.Paddings.SizeScreen)
+      modifier = Modifier.statusBarsPadding()
     )
 
     PointsMapBackButton(
@@ -110,7 +111,7 @@ internal fun PointsMapScreen(
       onClick = dismissSheetAndUnfocus,
       modifier = Modifier
         .statusBarsPadding()
-        .padding(top = AppTokens.Paddings.SizeScreen, start = AppTokens.Paddings.SizeScreen)
+        .padding(start = AppTokens.Paddings.SizeScreen)
     )
 
     AppBottomSheetContent(
@@ -137,8 +138,12 @@ internal fun PointsMapScreen(
     snapshotFlow { bottomSheetState.animationProgress }
       .collect { progress ->
         val delta = progress - lastProgress
-        val scrollY = delta * bottomSheetState.height / 2
-        cameraPositionState.move(CameraUpdateFactory.scrollBy(0f, scrollY))
+        val focusedPaddingPx = bottomSheetState.height / 2 -
+          with(density) { statusBarInsets.calculateBottomPadding().toPx() } -
+          with(density) { AppTokens.Paddings.SizeScreen.toPx() } -
+          with(density) { ScreenMapFocusedExtraPadding.toPx() }
+
+        cameraPositionState.move(CameraUpdateFactory.scrollBy(0f, focusedPaddingPx * delta))
         lastProgress = progress
       }
   }
@@ -155,7 +160,7 @@ internal fun PointsMapScreen(
       val centerUpdate = cameraPositionState.position.target
       val zoom = cameraPositionState.position.zoom
 
-      if (zoom >= ScreenMapZoomThreshold) {
+      if (zoom >= PointsMapScreenMapZoomThreshold) {
         onCameraIdle(centerUpdate)
       }
     }
@@ -164,8 +169,9 @@ internal fun PointsMapScreen(
   BackHandler(enabled = state.focusedMarker != null, onBack = dismissSheetAndUnfocus)
 }
 
-private const val ScreenMapZoomThreshold = 10f
+const val PointsMapScreenMapZoomThreshold = 10f
 private val ScreenMapPolandCenter = CameraPosition.fromLatLngZoom(LatLng(52.0, 19.0), 5.5f)
+private val ScreenMapFocusedExtraPadding = 36.dp // Approximate height of exit button
 
 @Composable
 private fun calculateScreenMapContentPadding(bottomSheetState: SKBottomSheetState): State<PaddingValues> {

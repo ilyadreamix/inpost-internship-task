@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 @Composable
 internal fun AppTheme(content: @Composable () -> Unit) {
   MaterialTheme(
-    colorScheme = if (isSystemInDarkTheme()) DarkColorScheme else LightColorScheme,
+    colorScheme = if (isSystemInDarkTheme()) AppDarkColorScheme else AppLightColorScheme,
     content = content
   )
 }

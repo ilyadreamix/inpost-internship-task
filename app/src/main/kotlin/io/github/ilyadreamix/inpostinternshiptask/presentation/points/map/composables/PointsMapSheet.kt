@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +39,8 @@ import coil3.compose.rememberAsyncImagePainter
 import io.github.ilyadreamix.inpostinternshiptask.R
 import io.github.ilyadreamix.inpostinternshiptask.domain.points.models.PickupPointModel
 import io.github.ilyadreamix.inpostinternshiptask.domain.points.models.isOpen
+import io.github.ilyadreamix.inpostinternshiptask.presentation.shared.theme.AppColorEasyAccess
+import io.github.ilyadreamix.inpostinternshiptask.presentation.shared.theme.AppColorOnEasyAccess
 import io.github.ilyadreamix.inpostinternshiptask.presentation.shared.theme.AppTheme
 import io.github.ilyadreamix.inpostinternshiptask.presentation.shared.theme.AppTokens
 
@@ -48,16 +50,10 @@ internal fun PointsMapSheetContent(point: PickupPointModel, modifier: Modifier =
     modifier = modifier
       .fillMaxWidth()
       .navigationBarsPadding()
-      .padding(
-        start = AppTokens.Paddings.SizeScreen,
-        end = AppTokens.Paddings.SizeScreen,
-        bottom = AppTokens.Paddings.SizeScreen
-      )
+      .padding(horizontal = AppTokens.Paddings.SizeScreen)
   ) {
     Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .height(IntrinsicSize.Min),
+      modifier = Modifier.fillMaxWidth(),
       verticalAlignment = Alignment.CenterVertically
     ) {
       Column(modifier = Modifier.weight(1f)) {
@@ -86,8 +82,7 @@ internal fun PointsMapSheetContent(point: PickupPointModel, modifier: Modifier =
               )
             }
           },
-          style = MaterialTheme.typography.bodyMedium,
-          lineHeight = LocalTextStyle.current.lineHeight * 0.8f
+          style = MaterialTheme.typography.bodyMedium
         )
       }
 
@@ -102,6 +97,20 @@ internal fun PointsMapSheetContent(point: PickupPointModel, modifier: Modifier =
     ContentOperatingHours(point)
 
     HorizontalDivider(modifier = Modifier.padding(vertical = AppTokens.Spacings.MD))
+
+    ContentLocation(point)
+
+    if (point.easyAccess) {
+
+      HorizontalDivider(modifier = Modifier.padding(vertical = AppTokens.Spacings.MD))
+
+      ContentChip(
+        text = { Text(text = stringResource(R.string.app_easy_access)) },
+        color = AppColorEasyAccess,
+        contentColor = AppColorOnEasyAccess,
+        icon = { Icon(painter = painterResource(R.drawable.mic_accessible), contentDescription = null) }
+      )
+    }
   }
 }
 
@@ -184,9 +193,89 @@ private fun ContentOperatingHours(point: PickupPointModel, modifier: Modifier = 
       )
     }
 
-    if (point.locationIsAvailable24Hours) {
+    Text(
+      text = point.formatContentOperatingHours(),
+      style = MaterialTheme.typography.bodyMedium
+    )
+  }
+}
+
+@ReadOnlyComposable
+@Composable
+private fun PickupPointModel.formatContentOperatingHours(): String {
+  if (locationIsAvailable24Hours) {
+    return stringResource(R.string.app_operating_hours_24_7)
+  }
+
+  if (operatingHours == null) {
+    return openingHours
+  }
+
+  val days = listOf(
+    stringResource(R.string.app_weekday_monday) to operatingHours.monday,
+    stringResource(R.string.app_weekday_tuesday) to operatingHours.tuesday,
+    stringResource(R.string.app_weekday_wednesday) to operatingHours.wednesday,
+    stringResource(R.string.app_weekday_thursday) to operatingHours.thursday,
+    stringResource(R.string.app_weekday_friday) to operatingHours.friday,
+    stringResource(R.string.app_weekday_saturday) to operatingHours.saturday,
+    stringResource(R.string.app_weekday_sunday) to operatingHours.sunday
+  )
+
+  return days
+    .filterNot { (_, intervals) -> intervals.isEmpty() }
+    .joinToString("\n") { (name, intervals) ->
+      "$name " + intervals.joinToString(", ") { interval ->
+        val startHours = interval.start / 60
+        val startMinutes = interval.start % 60
+
+        val endHours = interval.end / 60
+        val endMinutes = interval.end % 60
+
+        return@joinToString "%02d:%02d–%02d:%02d".format(startHours, startMinutes, endHours, endMinutes)
+      }
+    }
+}
+
+@Composable
+private fun ContentLocation(point: PickupPointModel, modifier: Modifier = Modifier) {
+  val locationType = stringResource(
+    when (point.locationType) {
+      PickupPointModel.LocationType.Outdoor -> R.string.app_location_outdoor
+      PickupPointModel.LocationType.Indoor -> R.string.app_location_indoor
+    }
+  )
+
+  Column(
+    modifier = modifier.fillMaxWidth(),
+    verticalArrangement = Arrangement.spacedBy(AppTokens.Spacings.SM)
+  ) {
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.SpaceBetween,
+      verticalAlignment = Alignment.CenterVertically
+    ) {
+
+      Text(text = stringResource(R.string.app_location), fontWeight = FontWeight.Bold)
+
+      ContentChip(
+        text = { Text(text = locationType) },
+        color = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+        icon = {
+          Icon(
+            painter = when (point.locationType) {
+              PickupPointModel.LocationType.Outdoor -> painterResource(R.drawable.mic_nature)
+              PickupPointModel.LocationType.Indoor -> painterResource(R.drawable.mic_apartment)
+            },
+            contentDescription = null
+          )
+        }
+      )
+    }
+
+    point.description?.let { description ->
       Text(
-        text = stringResource(R.string.app_operating_hours_24_7),
+        text = description.capitalize(Locale.current),
         style = MaterialTheme.typography.bodyMedium
       )
     }
@@ -206,22 +295,26 @@ private fun ContentChip(
 ) {
   Row(
     modifier = modifier
+      .height(ContentChipHeight)
       .clip(AppTokens.RoundedCornerShapes.PS)
       .background(color)
-      .padding(
-        horizontal = AppTokens.RoundedCornerShapes.SizePS,
-        vertical = AppTokens.RoundedCornerShapes.SizePS / 2
-      ),
-    verticalAlignment = Alignment.CenterVertically
+      .padding(horizontal = AppTokens.RoundedCornerShapes.SizePS),
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(AppTokens.Spacings.XS)
   ) {
     CompositionLocalProvider(LocalContentColor provides contentColor) {
       icon?.invoke()
-      text()
+      CompositionLocalProvider(
+        value = LocalTextStyle provides MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+        content = text
+      )
     }
   }
 }
 
-@Preview
+private val ContentChipHeight = 32.dp
+
+  @Preview
 @Composable
 private fun ContentChipPreview() {
   AppTheme {

@@ -1,5 +1,6 @@
 package io.github.ilyadreamix.inpostinternshiptask.domain.points.models
 
+import io.github.ilyadreamix.inpostinternshiptask.shared.extensions.now
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDateTime
 
@@ -50,7 +51,7 @@ internal data class PickupPointModel(
   }
 }
 
-internal fun PickupPointModel.isOpen(time: LocalDateTime = LocalDateTime(2026, 5, 10, 23, 30, 0, 0)): Boolean {
+internal fun PickupPointModel.isOpen(time: LocalDateTime = LocalDateTime.now()): Boolean {
   if (locationIsAvailable24Hours || operatingHours == null) {
     return true
   }

@@ -24,14 +24,14 @@ internal class InPostInternshipTaskApp : Application() {
   }
 
   override fun createConfigurationContext(overrideConfiguration: Configuration): Context? {
-    Locale.setDefault(LocaleEnglish)
-    overrideConfiguration.setLocale(LocaleEnglish)
+    Locale.setDefault(LocalePolish)
+    overrideConfiguration.setLocale(LocalePolish)
 
     return super.createConfigurationContext(overrideConfiguration)
   }
 
   companion object {
-    private val LocaleEnglish = localeOf("en")
+    private val LocalePolish = localeOf("pl")
   }
 }
 
