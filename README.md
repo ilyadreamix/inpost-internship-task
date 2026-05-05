@@ -7,7 +7,7 @@
 
 ## Overview
 
-InPost Map is an application which can help you find the nearest [InPost](https://inpost.pl) parcel locker and its information on the map in Poland.
+InPost Map is an Android application which can help you find the nearest [InPost](https://inpost.pl) parcel locker and its information on the map in Poland.
 
 ## Demo & Description
 
