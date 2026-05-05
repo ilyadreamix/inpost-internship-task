@@ -109,7 +109,7 @@ adb install ./app/build/outputs/apk/development/release/app-development-release.
 adb shell am start -n io.github.ilyadreamix.inpostinternshiptask.development/io.github.ilyadreamix.inpostinternshiptask.InPostInternshipTaskActivity
 ```
 
-### What I would do with more time?
+## What I would do with more time?
 
 If I had more time, the first thing I'd do is implement a **filtering system** for parcel lockers: status (active/inactive), specific time slots, and "Easy Access" availability. I'd also love to add a **search-by-address** feature, similar to how Google Maps allows you to find locations near a specific building or street. Additionally, since the app currently focuses on Poland and is only available in Polish, I would add **localization and country settings** to make it more universal.
 
