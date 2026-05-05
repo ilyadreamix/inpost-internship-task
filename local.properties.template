@@ -1,0 +1,32 @@
+# ------------------------------------
+# Google Maps
+# ------------------------------------
+
+# SDK API key
+app.google.maps.key=
+
+# ------------------------------------
+# Development signing options
+# ------------------------------------
+
+# JKS file absolute path
+app.signing.development.store.file=
+
+# JKS file password
+app.signing.development.store.password=
+
+# Key alias (name)
+app.signing.development.key.alias=
+
+# Key password
+app.signing.development.key.password=
+
+# ------------------------------------
+# Release signing options
+# ------------------------------------
+# You can duplicate development values for testing
+
+app.signing.production.store.file=
+app.signing.production.store.password=
+app.signing.production.key.alias=
+app.signing.production.key.password=
