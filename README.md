@@ -70,7 +70,7 @@ To build this experience, I used a modern Android stack:
 
 > **⚠️ Please read the whole section.**
 
-#### System requirements:
+#### System requirements
 
 - **OpenJDK 21**
 - **Android SDK 37**
@@ -81,6 +81,9 @@ To build this experience, I used a modern Android stack:
 If you want to build the APK yourself, you **must** fill in some additional data in your `local.properties` file. I've provided a template called `local.properties.template`. You can copy the keys from there along with the comments. Please make sure to replace the placeholders (including the `<` and `>` symbols) with your actual data.
 
 I've set it up this way so I don't accidentally leak my own API keys to the web. If you can't provide your own keys, you can always use the pre-built production release and run it on an emulator or a physical device, just grab it from the [Releases](https://github.com/ilyadreamix/inpost-internship-task/releases/tag/0.0.1) page.
+
+**Android SDK path:**<br />
+`sdk.dir=<PASTE SDK PATH HERE>`
 
 **Google Maps API Key:** <br />
 `app.google.maps.key=<PASTE KEY HERE>`
