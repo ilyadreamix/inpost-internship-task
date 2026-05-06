@@ -83,25 +83,37 @@ If you want to build the APK yourself, you **must** fill in some additional data
 
 I've set it up this way so I don't accidentally leak my own API keys to the web. If you can't provide your own keys, you can always use the pre-built production release and run it on an emulator or a physical device, just grab it from the [Releases](https://github.com/ilyadreamix/inpost-internship-task/releases/tag/0.0.1) page.
 
-**Android SDK path:**<br />
+**Android SDK path:**
+
 `sdk.dir=<PASTE SDK PATH HERE>`
 
-**Google Maps API Key:** <br />
+**Google Maps API Key:**
+
 `app.google.maps.key=<PASTE KEY HERE>`
 
-**Development Signing Configuration:** <br />
-(Provide the absolute path to your `.jks` file, the store password, key alias, and key password) <br />
-`app.signing.development.store.file=<PASTE ABSOLUTE PATH HERE>` <br />
-`app.signing.development.store.password=<PASTE JKS PASSWORD>` <br />
-`app.signing.development.key.alias=<PASTE KEY ALIAS>` <br />
+**Development Signing Configuration:**
+
+(Provide the absolute path to your `.jks` file, the store password, key alias, and key password)
+
+`app.signing.development.store.file=<PASTE ABSOLUTE PATH HERE>`
+
+`app.signing.development.store.password=<PASTE JKS PASSWORD>`
+
+`app.signing.development.key.alias=<PASTE KEY ALIAS>`
+
 `app.signing.development.key.password=<PASTE KEY PASSWORD>`
 
-**Production Signing Configuration:** <br />
-(For testing purposes, you can duplicate your development values here) <br />
-`app.signing.production.store.file=<PASTE ABSOLUTE PATH HERE>` <br />
-`app.signing.production.store.password=<PASTE JKS PASSWORD>` <br />
-`app.signing.production.key.alias=<PASTE KEY ALIAS>` <br />
-`app.signing.production.key.password=<PASTE KEY PASSWORD>` <br />
+**Production Signing Configuration:**
+
+(For testing purposes, you can duplicate your development values here)
+
+`app.signing.production.store.file=<PASTE ABSOLUTE PATH HERE>`
+
+`app.signing.production.store.password=<PASTE JKS PASSWORD>`
+
+`app.signing.production.key.alias=<PASTE KEY ALIAS>`
+
+`app.signing.production.key.password=<PASTE KEY PASSWORD>`
 
 ### Build & run
 
