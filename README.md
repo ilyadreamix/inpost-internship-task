@@ -41,7 +41,7 @@ When you tap a parcel locker icon, the app switches into what I call **"focus mo
 
 Focus mode is a state where the app displays detailed information about a specific parcel locker. You can enter this mode by tapping any locker icon on the map.
 
-In Focus Mode, the app provides following details:
+In focus mode, the app provides following details:
 
 - The locker's code name and full address.
 - A photo of the location and its operating hours.
