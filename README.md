@@ -68,7 +68,8 @@ To build this experience, I used a modern Android stack:
 
 ### Prerequisites
 
-> **⚠️ Please read the whole section.**
+> [!WARNING]
+> Please read the whole section.
 
 #### System requirements
 
